@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="sr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Automatizacija - YTY Izveštaj o Efikasnosti</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Space Grotesk (Futuristički tech font) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Space Grotesk"', 'sans-serif'],
+                    },
+                    colors: {
+                        cyber: {
+                            base: '#050511',    // Duboka crna sa plavim tonom
+                            card: '#0a0a1a',    // Tamna pozadina kartica
+                            border: '#1e1e38',  // Ivice
+                            cyan: '#00f0ff',    // Neon Cijan (Cyberpunk vibe)
+                            violet: '#b026ff',  // Neon Ljubičasta
+                            magenta: '#ff003c', // Akcentna crvena
+                        }
+                    },
+                    boxShadow: {
+                        'glow-cyan': '0 0 20px rgba(0, 240, 255, 0.2)',
+                        'glow-violet': '0 0 20px rgba(176, 38, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #050511;
+            color: #e2e8f0;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(176, 38, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(0, 240, 255, 0.08) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        .glass-cyber {
+            background: linear-gradient(145deg, rgba(10, 10, 26, 0.8), rgba(15, 15, 30, 0.4));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 240, 255, 0.1);
+        }
+
+        .text-glow-cyan {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+
+        /* Moderni Cyber Slajder */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 4px; /* Kvadratni thumb za techy izgled */
+            background: #00f0ff;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.8);
+            transform: rotate(45deg); /* Rotiran u romb */
+            transition: all 0.2s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: rotate(45deg) scale(1.2);
+            background: #fff;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #1e1e38;
+            border-radius: 2px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tech grid pozadina za grafike */
+        .tech-grid {
+            background-size: 30px 30px;
+            background-image: 
+                linear-gradient(to right, rgba(30, 30, 56, 0.3) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(30, 30, 56, 0.3) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col font-sans">
+
+    <nav class="glass-cyber border-b border-cyber-border sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center gap-3">
+                        <div class="w-10 h-10 border border-cyber-cyan rounded bg-cyber-cyan/10 flex items-center justify-center text-cyber-cyan shadow-glow-cyan">
+                            <i class="fa-solid fa-microchip"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-bold text-xl tracking-wide text-white uppercase leading-none mt-1">Synapse<span class="text-cyber-cyan">.AI</span></span>
+                            <span class="text-[9px] tracking-widest uppercase text-cyber-violet font-semibold mt-1">Intelligent Operations</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex flex-col text-right mr-4">
+                        <span class="text-xs text-slate-400">Sistem Status</span>
+                        <span class="text-xs font-bold text-cyber-cyan flex items-center justify-end gap-1"><span class="w-2 h-2 bg-cyber-cyan rounded-full animate-pulse"></span> Online & Optimizovan</span>
+                    </div>
+                    <button class="inline-flex items-center px-4 py-2 border border-cyber-violet/50 hover:border-cyber-violet bg-cyber-violet/10 rounded text-sm font-medium text-white transition-all shadow-glow-violet">
+                        <i class="fa-solid fa-download mr-2 text-cyber-violet"></i> Generiši Izveštaj
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow">
+        
+        <div class="mb-10 flex flex-col md:flex-row justify-between items-end fade-in">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-cyber-border/50 border border-cyber-border text-xs font-medium text-slate-300 mb-4">
+                    <i class="fa-solid fa-code-commit text-cyber-cyan"></i> YTY Analiza 2025 vs 2026
+                </div>
+                <h1 class="text-3xl md:text-5xl font-bold text-white mb-2 tracking-tight uppercase">AI Efikasnost & <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan to-cyber-violet text-glow-cyan">Automatizacija</span></h1>
+                <p class="text-slate-400 text-lg">Merenje impakta veštačke inteligencije na operativne troškove i produktivnost tima.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            
+            <!-- KPI 1: Ušteđeni ljudski sati -->
+            <div class="glass-cyber rounded-xl p-6 relative overflow-hidden group fade-in" style="animation-delay: 100ms;">
+                <div class="absolute top-0 right-0 w-16 h-16 bg-cyber-cyan/10 rounded-bl-full flex items-start justify-end p-3">
+                    <i class="fa-solid fa-user-clock text-cyber-cyan opacity-50"></i>
+                </div>
+                <p class="text-xs uppercase tracking-widest text-slate-400 mb-1">Ušteđeni Ljudski Sati</p>
+                <h3 class="text-4xl font-bold text-white mb-2 font-mono">18,450 <span class="text-lg text-slate-500 font-sans">h</span></h3>
+                <div class="flex items-center text-xs font-medium mt-3">
+                    <span class="text-cyber-cyan bg-cyber-cyan/10 border border-cyber-cyan/30 px-2 py-0.5 rounded mr-2"><i class="fa-solid fa-arrow-up mr-1"></i>+315%</span>
+                    <span class="text-slate-500">YTY Eksponencijalni rast</span>
+                </div>
+            </div>
+
+            <!-- KPI 2: Trošak API Tokena -->
+            <div class="glass-cyber rounded-xl p-6 relative overflow-hidden group fade-in" style="animation-delay: 200ms;">
+                <div class="absolute top-0 right-0 w-16 h-16 bg-cyber-violet/10 rounded-bl-full flex items-start justify-end p-3">
+                    <i class="fa-solid fa-coins text-cyber-violet opacity-50"></i>
+                </div>
+                <p class="text-xs uppercase tracking-widest text-slate-400 mb-1">API Tokeni (LLM Trošak)</p>
+                <h3 class="text-4xl font-bold text-white mb-2 font-mono">€4,250</h3>
+                <div class="flex items-center text-xs font-medium mt-3">
+                    <span class="text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-2 py-0.5 rounded mr-2" title="Pad troškova je odličan"><i class="fa-solid fa-arrow-down mr-1"></i>-42%</span>
+                    <span class="text-slate-500">Optimizovani GPT/Claude modeli</span>
+                </div>
+            </div>
+
+            <!-- KPI 3: Stopa uspešnosti Agenata -->
+            <div class="glass-cyber rounded-xl p-6 relative overflow-hidden group fade-in" style="animation-delay: 300ms;">
+                <div class="absolute top-0 right-0 w-16 h-16 bg-emerald-500/10 rounded-bl-full flex items-start justify-end p-3">
+                    <i class="fa-solid fa-bullseye text-emerald-400 opacity-50"></i>
+                </div>
+                <p class="text-xs uppercase tracking-widest text-slate-400 mb-1">Stopa Autonomije (Success Rate)</p>
+                <h3 class="text-4xl font-bold text-white mb-2 font-mono">96.8 <span class="text-lg text-slate-500 font-sans">%</span></h3>
+                <div class="flex items-center text-xs font-medium mt-3">
+                    <span class="text-cyber-cyan bg-cyber-cyan/10 border border-cyber-cyan/30 px-2 py-0.5 rounded mr-2"><i class="fa-solid fa-check-double mr-1"></i>Bez halucinacija</span>
+                    <span class="text-slate-500">Zadaci rešeni bez čoveka</span>
+                </div>
+            </div>
+
+            <!-- KPI 4: Operativni ROI -->
+            <div class="glass-cyber rounded-xl p-6 relative overflow-hidden group fade-in border-b-2 border-cyber-magenta" style="animation-delay: 400ms;">
+                <div class="absolute top-0 right-0 w-16 h-16 bg-cyber-magenta/10 rounded-bl-full flex items-start justify-end p-3">
+                    <i class="fa-solid fa-chart-line text-cyber-magenta opacity-50"></i>
+                </div>
+                <p class="text-xs uppercase tracking-widest text-slate-400 mb-1">Operativni ROI</p>
+                <h3 class="text-4xl font-bold text-cyber-magenta mb-2 font-mono">12.4x</h3>
+                <div class="flex items-center text-xs font-medium mt-3">
+                    <span class="text-slate-400">Na 1€ uložen u AI vraća se 12.4€ kroz uštedu</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-cyber rounded-xl p-6 md:p-8 mb-10 border border-cyber-cyan/30 shadow-glow-cyan fade-in" style="animation-delay: 500ms;">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+                <div>
+                    <h3 class="text-xl font-bold text-white uppercase tracking-wide flex items-center gap-3">
+                        <i class="fa-solid fa-network-wired text-cyber-cyan"></i> Simulator AI Autonomije
+                    </h3>
+                    <p class="text-sm text-slate-400 mt-2 max-w-2xl">Istražite kako nivo delegiranja zadataka AI agentima utiče na uštedu ljudskih sati u odnosu na potršnju API tokena.</p>
+                </div>
+                <div class="px-5 py-3 bg-cyber-card border border-cyber-border rounded text-center min-w-[200px]">
+                    <span class="block text-[10px] uppercase text-slate-500 tracking-widest mb-1">Trenutni Nivo Skaliranja</span>
+                    <span id="scaleLabel" class="font-bold text-cyber-cyan text-lg">Level 2: Ko-Pilot</span>
+                </div>
+            </div>
+            
+            <div class="px-4 py-4 relative">
+                <input type="range" id="aiScaleSlider" min="1" max="4" step="1" value="2">
+                <div class="flex justify-between text-[10px] sm:text-xs text-slate-500 mt-6 font-bold uppercase tracking-wider relative z-10">
+                    <span class="cursor-pointer hover:text-white transition w-1/4 text-left">L1: Asistent</span>
+                    <span class="text-cyber-cyan cursor-pointer w-1/4 text-center">L2: Ko-Pilot</span>
+                    <span class="cursor-pointer hover:text-white transition w-1/4 text-center">L3: Autonomija</span>
+                    <span class="cursor-pointer text-cyber-violet w-1/4 text-right">L4: Full AI OPs</span>
+                </div>
+                <!-- Dekorativne linije za slajder -->
+                <div class="absolute left-0 right-0 top-6 h-4 flex justify-between px-4 pointer-events-none opacity-20">
+                    <div class="w-0.5 h-full bg-white"></div><div class="w-0.5 h-full bg-white"></div><div class="w-0.5 h-full bg-white"></div><div class="w-0.5 h-full bg-white"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-10">
+            
+            <!-- Area Chart: Smena manuelnog rada vs AI -->
+            <div class="glass-cyber rounded-xl p-6 lg:col-span-3 fade-in tech-grid" style="animation-delay: 600ms;">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-white uppercase tracking-wider">Volumen Zadataka: AI vs Ljudi</h3>
+                        <p class="text-xs text-slate-400 mt-1">Prikaz kako AI agenti preuzimaju repetitivne zadatke (YTY trend).</p>
+                    </div>
+                </div>
+                <div class="relative w-full" style="height: 320px;">
+                    <canvas id="taskVolumeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Radar Chart: AI Sposobnosti po odeljenjima -->
+            <div class="glass-cyber rounded-xl p-6 lg:col-span-2 fade-in flex flex-col" style="animation-delay: 700ms;">
+                <h3 class="text-lg font-bold text-white uppercase tracking-wider mb-1">Distribucija AI Agenata</h3>
+                <p class="text-xs text-slate-400 mb-2">Pokrivenost procesa po sektorima</p>
+                
+                <div class="relative w-full flex-grow flex justify-center" style="height: 250px;">
+                    <canvas id="aiRadarChart"></canvas>
+                </div>
+                
+                <div class="mt-4 grid grid-cols-2 gap-y-3 gap-x-2 text-xs">
+                    <div class="flex items-center gap-2 text-slate-300"><span class="w-2 h-2 rounded-full bg-cyber-cyan shadow-glow-cyan"></span> Podrška & CX</div>
+                    <div class="flex items-center gap-2 text-slate-300"><span class="w-2 h-2 rounded-full bg-cyber-violet shadow-glow-violet"></span> Analitika Podataka</div>
+                    <div class="flex items-center gap-2 text-slate-300"><span class="w-2 h-2 rounded-full border border-cyber-cyan bg-transparent"></span> Generisanje Koda</div>
+                    <div class="flex items-center gap-2 text-slate-300"><span class="w-2 h-2 rounded-full border border-cyber-violet bg-transparent"></span> HR Automatizacija</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-cyber rounded-xl overflow-hidden border border-cyber-border fade-in" style="animation-delay: 800ms;">
+            <div class="p-6 border-b border-cyber-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-cyber-base/50">
+                <div>
+                    <h3 class="text-lg font-bold text-white uppercase tracking-wider">Top AI Agenti u Produkciji</h3>
+                    <p class="text-sm text-slate-400">Pregled najisplativijih automatizacija u Q3/Q4 2026.</p>
+                </div>
+                <button class="px-4 py-2 border border-cyber-cyan/30 text-cyber-cyan hover:bg-cyber-cyan/10 rounded text-sm transition-colors duration-300">
+                    <i class="fa-solid fa-terminal mr-2"></i> Prikaži Logove
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-cyber-border/30 text-slate-500 text-[10px] uppercase tracking-widest">
+                            <th class="p-4 font-semibold border-b border-cyber-border">ID Agenta / Ime</th>
+                            <th class="p-4 font-semibold border-b border-cyber-border">LLM Model</th>
+                            <th class="p-4 font-semibold border-b border-cyber-border">Ušteđeni Sati (Mesečno)</th>
+                            <th class="p-4 font-semibold border-b border-cyber-border">Preciznost</th>
+                            <th class="p-4 font-semibold border-b border-cyber-border text-right">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-cyber-border/50 text-slate-300 font-mono">
+                        <tr class="hover:bg-cyber-cyan/5 transition-colors cursor-pointer">
+                            <td class="p-4 font-sans font-medium text-white flex items-center gap-3">
+                                <i class="fa-solid fa-headset text-cyber-cyan"></i> CX-Resolve-Bot v2
+                            </td>
+                            <td class="p-4"><span class="bg-slate-800 px-2 py-1 rounded text-xs">GPT-4o Mini</span></td>
+                            <td class="p-4 text-cyber-cyan">450h</td>
+                            <td class="p-4">98.2%</td>
+                            <td class="p-4 text-right"><span class="text-emerald-400 flex items-center justify-end gap-2"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Active</span></td>
+                        </tr>
+                        <tr class="hover:bg-cyber-cyan/5 transition-colors cursor-pointer">
+                            <td class="p-4 font-sans font-medium text-white flex items-center gap-3">
+                                <i class="fa-solid fa-file-invoice text-cyber-violet"></i> Invoice-Extract-Agent
+                            </td>
+                            <td class="p-4"><span class="bg-slate-800 px-2 py-1 rounded text-xs">Claude 3.5 Sonnet</span></td>
+                            <td class="p-4 text-cyber-violet">320h</td>
+                            <td class="p-4">99.9%</td>
+                            <td class="p-4 text-right"><span class="text-emerald-400 flex items-center justify-end gap-2"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Active</span></td>
+                        </tr>
+                        <tr class="hover:bg-cyber-cyan/5 transition-colors cursor-pointer">
+                            <td class="p-4 font-sans font-medium text-white flex items-center gap-3">
+                                <i class="fa-solid fa-bug text-cyber-magenta"></i> QA-Auto-Tester
+                            </td>
+                            <td class="p-4"><span class="bg-slate-800 px-2 py-1 rounded text-xs">Custom Llama-3</span></td>
+                            <td class="p-4 text-slate-400">180h</td>
+                            <td class="p-4">94.5%</td>
+                            <td class="p-4 text-right"><span class="text-amber-400 flex items-center justify-end gap-2"><span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span> Standby</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-cyber-border py-6 bg-cyber-base mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-slate-500">
+            <div>
+                <i class="fa-solid fa-shield-halved mr-2 text-cyber-cyan"></i> Synapse AI Analytics | Godina 2026.
+            </div>
+            <div>
+                Secured Connection: <span class="text-emerald-400 font-bold">256-bit AES</span> | Latency: 12ms
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Konfiguracija Chart.js za Cyber (Tamnu) Temu
+            Chart.defaults.color = '#64748b'; // slate-500
+            Chart.defaults.font.family = '"Space Grotesk", sans-serif';
+            Chart.defaults.borderColor = 'rgba(30, 30, 56, 0.5)'; // cyber-border
+
+            const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Avg', 'Sep', 'Okt', 'Nov', 'Dec'];
+            
+            // Boje za grafike
+            const neonCyan = '#00f0ff';
+            const neonCyanBg = 'rgba(0, 240, 255, 0.15)';
+            const neonViolet = '#b026ff';
+            const neonVioletBg = 'rgba(176, 38, 255, 0.15)';
+            const slateColor = '#475569';
+
+            // Scenariji za Slajder (Nivoi AI Autonomije)
+            const aiScenarios = {
+                1: {
+                    levelName: "Level 1: AI Asistent",
+                    labelClass: "text-slate-300",
+                    aiData: [500, 600, 800, 1000, 1200, 1500, 1600, 1800, 2000, 2200, 2500, 2800],
+                    humanData: [15000, 14800, 14500, 14000, 13800, 13500, 13200, 13000, 12800, 12500, 12200, 12000],
+                    radarData: [40, 20, 10, 30] // Support, Analytics, Code, HR
+                },
+                2: {
+                    levelName: "Level 2: Ko-Pilot (Aktuelno)",
+                    labelClass: "text-cyber-cyan",
+                    aiData: [800, 1200, 2500, 3800, 5000, 6500, 8000, 9500, 11000, 13000, 15500, 18450], // Agresivan rast
+                    humanData: [15000, 14000, 12500, 11000, 9500, 8000, 6800, 5500, 4200, 3000, 2000, 1200], // Drastičan pad
+                    radarData: [85, 60, 45, 70]
+                },
+                3: {
+                    levelName: "Level 3: Autonomija",
+                    labelClass: "text-white",
+                    aiData: [1500, 2500, 4000, 6000, 9000, 12000, 15000, 18000, 22000, 26000, 30000, 35000],
+                    humanData: [15000, 13000, 10500, 8000, 5000, 3000, 1500, 800, 400, 200, 100, 50],
+                    radarData: [95, 85, 75, 90]
+                },
+                4: {
+                    levelName: "Level 4: Full AI OPs",
+                    labelClass: "text-cyber-violet glow-text",
+                    aiData: [3000, 5000, 8000, 12000, 18000, 25000, 35000, 45000, 60000, 75000, 90000, 110000],
+                    humanData: [15000, 11000, 7000, 3000, 500, 100, 50, 20, 10, 5, 0, 0], // Ljudi praktično ne rade
+                    radarData: [100, 98, 95, 99]
+                }
+            };
+
+            // --- 1. Glavni Area Chart (AI vs Ljudi) ---
+            const ctxArea = document.getElementById('taskVolumeChart').getContext('2d');
+            
+            // Gradijenti za chart
+            const aiGradient = ctxArea.createLinearGradient(0, 0, 0, 300);
+            aiGradient.addColorStop(0, neonCyanBg);
+            aiGradient.addColorStop(1, 'rgba(0,0,0,0)');
+
+            const taskChart = new Chart(ctxArea, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Zadaci rešeni od strane AI Agenata',
+                            data: aiScenarios[2].aiData,
+                            borderColor: neonCyan,
+                            backgroundColor: aiGradient,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#050511',
+                            pointBorderColor: neonCyan,
+                            pointRadius: 3,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Zadaci rešeni manuelno (Ljudi)',
+                            data: aiScenarios[2].humanData,
+                            borderColor: slateColor,
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: { 
+                            position: 'top',
+                            labels: { color: '#94a3b8', font: { family: '"Space Grotesk", sans-serif' } }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 10, 26, 0.9)',
+                            titleColor: '#fff',
+                            bodyColor: '#cbd5e1',
+                            borderColor: neonCyan,
+                            borderWidth: 1,
+                            padding: 12,
+                            titleFont: { size: 14, family: '"Space Grotesk"' },
+                            bodyFont: { size: 13, family: '"Space Grotesk"', family: 'monospace' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(30, 30, 56, 0.4)', drawBorder: false },
+                        },
+                        x: { grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+
+            // --- 2. Radar Chart (Sposobnosti AI Agenata) ---
+            const ctxRadar = document.getElementById('aiRadarChart').getContext('2d');
+            const radarChart = new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['Customer Support', 'Data Analytics', 'Code Generation', 'HR & Onboarding'],
+                    datasets: [{
+                        label: 'Efikasnost Autonomije (%)',
+                        data: aiScenarios[2].radarData,
+                        backgroundColor: neonVioletBg,
+                        borderColor: neonViolet,
+                        pointBackgroundColor: neonViolet,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: neonViolet,
+                        borderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(30, 30, 56, 0.8)' },
+                            grid: { color: 'rgba(30, 30, 56, 0.8)' },
+                            pointLabels: { color: '#94a3b8', font: { family: '"Space Grotesk"', size: 11 } },
+                            ticks: { display: false, min: 0, max: 100 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 10, 26, 0.9)',
+                            borderColor: neonViolet,
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+
+            // --- 3. Logika za Simulator Slajder ---
+            const slider = document.getElementById('aiScaleSlider');
+            const scaleLabel = document.getElementById('scaleLabel');
+
+            slider.addEventListener('input', function() {
+                const val = this.value;
+                const currentData = aiScenarios[val];
+
+                // Update Labele
+                scaleLabel.textContent = currentData.levelName;
+                scaleLabel.className = `font-bold text-lg ${currentData.labelClass}`;
+
+                // Update Grafikona sa vizuelnom animacijom
+                taskChart.data.datasets[0].data = currentData.aiData;
+                taskChart.data.datasets[1].data = currentData.humanData;
+                
+                // Menjamo boje linija ako je Level 4 (Full AI)
+                if(val == 4) {
+                    taskChart.data.datasets[0].borderColor = neonViolet;
+                    taskChart.data.datasets[0].pointBorderColor = neonViolet;
+                    
+                    const newGradient = ctxArea.createLinearGradient(0, 0, 0, 300);
+                    newGradient.addColorStop(0, neonVioletBg);
+                    newGradient.addColorStop(1, 'rgba(0,0,0,0)');
+                    taskChart.data.datasets[0].backgroundColor = newGradient;
+                } else {
+                    taskChart.data.datasets[0].borderColor = neonCyan;
+                    taskChart.data.datasets[0].pointBorderColor = neonCyan;
+                    taskChart.data.datasets[0].backgroundColor = aiGradient;
+                }
+                
+                taskChart.update();
+
+                radarChart.data.datasets[0].data = currentData.radarData;
+                radarChart.update();
+            });
+        });
+    </script>
+</body>
+</html>

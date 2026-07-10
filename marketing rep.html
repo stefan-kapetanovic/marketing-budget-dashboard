@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="sr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketinški Budžet H2 2026 - NexGen Marketing</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Moderan, tehnološki font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        neon: {
+                            purple: '#c026d3', // fuchsia-600
+                            blue: '#4338ca',   // indigo-700
+                            cyan: '#06b6d4',   // cyan-500
+                            green: '#10b981',  // emerald-500
+                        },
+                        surface: {
+                            900: '#0f172a', // slate-900
+                            800: '#1e293b', // slate-800
+                            700: '#334155', // slate-700
+                        }
+                    },
+                    boxShadow: {
+                        'neon-purple': '0 0 20px rgba(192, 38, 211, 0.3)',
+                        'neon-cyan': '0 0 20px rgba(6, 182, 212, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #020617; /* Vrlo tamna slate boja */
+            color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(67, 56, 202, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(192, 38, 211, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Glassmorphism za tamnu temu */
+        .glass-dark {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Tekstualni gradijent */
+        .text-gradient {
+            background: linear-gradient(135deg, #c026d3, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Stilizacija slajdera (Simulator) */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            margin-top: -10px;
+            border: 4px solid #c026d3;
+            box-shadow: 0 0 15px rgba(192, 38, 211, 0.6);
+            transition: all 0.2s;
+        }
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.2);
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: linear-gradient(90deg, #334155, #c026d3);
+            border-radius: 4px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <nav class="glass-dark border-b border-surface-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-purple to-neon-blue flex items-center justify-center text-white shadow-neon-purple">
+                            <i class="fa-solid fa-rocket"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-bold text-xl tracking-tight text-white leading-tight">NexGen<span class="text-neon-cyan">Ads</span></span>
+                            <span class="text-[10px] tracking-widest uppercase text-slate-400 font-semibold">Growth Dashboard</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="hidden md:inline-flex items-center px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold tracking-wide">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span> Uživo
+                    </span>
+                    <button class="inline-flex items-center px-5 py-2.5 bg-surface-800 hover:bg-surface-700 border border-surface-700 rounded-lg text-sm font-medium text-white transition-colors">
+                        Eksportuj Budžet <i class="fa-solid fa-cloud-arrow-down ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow">
+        
+        <div class="mb-10 flex flex-col md:flex-row justify-between items-end fade-in">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-2 tracking-tight">Marketinški Budžet <span class="text-gradient">H2 2026</span></h1>
+                <p class="text-slate-400 font-medium text-lg">Projekcija troškova i povrata investicije (Jul - Decembar).</p>
+            </div>
+            <div class="mt-4 md:mt-0 px-4 py-2 glass-dark rounded-lg text-sm font-medium text-slate-300">
+                Valuta: <strong class="text-white">EUR (€)</strong> | Tržište: <strong class="text-white">Global/EU</strong>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            
+            <!-- KPI 1: Ukupan Budžet -->
+            <div class="glass-dark rounded-2xl p-6 relative overflow-hidden group fade-in" style="animation-delay: 100ms;">
+                <div class="absolute top-0 right-0 p-4 opacity-20 text-neon-cyan text-5xl group-hover:scale-110 group-hover:opacity-40 transition-all">
+                    <i class="fa-solid fa-vault"></i>
+                </div>
+                <p class="text-sm font-semibold text-slate-400 mb-1">Dostupan Budžet (H2)</p>
+                <h3 class="text-4xl font-bold text-white mb-2" id="kpiBudget">€450,000</h3>
+                <div class="flex items-center text-xs font-medium">
+                    <span class="text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded mr-2">+15% YTY</span>
+                    <span class="text-slate-500">Odobreno od CFO</span>
+                </div>
+            </div>
+
+            <!-- KPI 2: Ciljani ROAS -->
+            <div class="glass-dark rounded-2xl p-6 relative overflow-hidden group fade-in" style="animation-delay: 200ms;">
+                <div class="absolute top-0 right-0 p-4 opacity-20 text-neon-purple text-5xl group-hover:scale-110 group-hover:opacity-40 transition-all">
+                    <i class="fa-solid fa-bullseye"></i>
+                </div>
+                <p class="text-sm font-semibold text-slate-400 mb-1">Ciljani ROAS</p>
+                <h3 class="text-4xl font-bold text-white mb-2"><span id="kpiRoas">4.2</span><span class="text-2xl text-slate-500">x</span></h3>
+                <div class="flex items-center text-xs font-medium">
+                    <span class="text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded mr-2"><i class="fa-solid fa-check mr-1"></i>Zdravo</span>
+                    <span class="text-slate-500">Povrat na oglasnu potrošnju</span>
+                </div>
+            </div>
+
+            <!-- KPI 3: Projektovani CAC -->
+            <div class="glass-dark rounded-2xl p-6 relative overflow-hidden group fade-in" style="animation-delay: 300ms;">
+                <div class="absolute top-0 right-0 p-4 opacity-20 text-orange-500 text-5xl group-hover:scale-110 group-hover:opacity-40 transition-all">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <p class="text-sm font-semibold text-slate-400 mb-1">Prosečan CAC</p>
+                <h3 class="text-4xl font-bold text-white mb-2" id="kpiCac">€18.50</h3>
+                <div class="flex items-center text-xs font-medium">
+                    <span class="text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded mr-2" id="cacStatus">-2% vs H1</span>
+                    <span class="text-slate-500">Cena akvizicije kupca</span>
+                </div>
+            </div>
+
+            <!-- KPI 4: Očekivani Prihod -->
+            <div class="glass-dark rounded-2xl p-6 relative overflow-hidden group fade-in" style="animation-delay: 400ms;">
+                <div class="absolute top-0 right-0 p-4 opacity-20 text-emerald-500 text-5xl group-hover:scale-110 group-hover:opacity-40 transition-all">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <p class="text-sm font-semibold text-slate-400 mb-1">Projektovani Prihod</p>
+                <h3 class="text-4xl font-bold text-emerald-400 mb-2" id="kpiRevenue">€1.89M</h3>
+                <div class="flex items-center text-xs font-medium">
+                    <span class="text-slate-300 bg-surface-700 px-2 py-0.5 rounded mr-2">Model: Linearni rast</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-dark rounded-2xl p-8 mb-10 border-t border-neon-purple shadow-neon-purple fade-in" style="animation-delay: 500ms;">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                <div>
+                    <h3 class="text-2xl font-bold text-white"><i class="fa-solid fa-sliders text-neon-purple mr-2"></i> Simulator Potrošnje (Scale)</h3>
+                    <p class="text-sm text-slate-400 mt-1">Pomerite slajder da simulirate uticaj skaliranja budžeta na metrike. (Diminishing returns model)</p>
+                </div>
+                <div class="px-5 py-2.5 bg-gradient-to-r from-neon-purple/20 to-neon-blue/20 border border-neon-purple/30 rounded-xl">
+                    Strategija: <span id="strategyLabel" class="font-bold text-white tracking-wide">Uravnotežen Rast (Baseline)</span>
+                </div>
+            </div>
+            
+            <div class="px-4">
+                <input type="range" id="strategySlider" min="1" max="3" step="1" value="2">
+                <div class="flex justify-between text-xs sm:text-sm text-slate-400 mt-5 font-bold uppercase tracking-wider">
+                    <span class="cursor-pointer hover:text-white transition">Konzervativno (Štednja)</span>
+                    <span class="text-white cursor-pointer">Baseline (Plan)</span>
+                    <span class="text-neon-cyan cursor-pointer">Agresivno (Market Share)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-10">
+            
+            <!-- Bar Chart: Potrošnja po mesecima -->
+            <div class="glass-dark rounded-2xl p-6 lg:col-span-3 fade-in" style="animation-delay: 600ms;">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Dinamika Potrošnje H2</h3>
+                        <p class="text-xs text-slate-400">Prikaz planirane potrošnje (Burn Rate) od Jula do Decembra (Praznici).</p>
+                    </div>
+                </div>
+                <div class="relative w-full" style="height: 320px;">
+                    <canvas id="monthlySpendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Polar Area Chart: Alokacija Kanala -->
+            <div class="glass-dark rounded-2xl p-6 lg:col-span-2 fade-in flex flex-col" style="animation-delay: 700ms;">
+                <h3 class="text-lg font-bold text-white mb-1">Alokacija po Kanalima</h3>
+                <p class="text-xs text-slate-400 mb-4">Distribucija budžeta (Performance vs Brand)</p>
+                
+                <div class="relative w-full flex-grow flex justify-center" style="height: 250px;">
+                    <canvas id="channelAllocationChart"></canvas>
+                </div>
+                
+                <!-- Custom Legenda -->
+                <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
+                    <div class="flex items-center gap-2 text-slate-300"><span class="w-3 h-3 rounded bg-blue-500"></span> Meta Ads</div>
+                    <div class="flex items-center gap-2 text-slate-300"><span class="w-3 h-3 rounded bg-red-500"></span> Google Ads</div>
+                    <div class="flex items-center gap-2 text-slate-300"><span class="w-3 h-3 rounded bg-purple-500"></span> TikTok/Influenseri</div>
+                    <div class="flex items-center gap-2 text-slate-300"><span class="w-3 h-3 rounded bg-emerald-500"></span> SEO & Content</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-dark rounded-2xl overflow-hidden border border-surface-700 fade-in" style="animation-delay: 800ms;">
+            <div class="p-6 border-b border-surface-700 flex justify-between items-center bg-surface-800/50">
+                <h3 class="text-lg font-bold text-white">Strateške Inicijative H2</h3>
+                <button class="text-sm text-neon-cyan hover:text-white transition"><i class="fa-solid fa-filter mr-1"></i> Filtriraj</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-surface-900/80 text-slate-400 text-xs uppercase tracking-wider">
+                            <th class="p-5 font-semibold">Kampanja / Inicijativa</th>
+                            <th class="p-5 font-semibold">Kanal</th>
+                            <th class="p-5 font-semibold">Budžet (€)</th>
+                            <th class="p-5 font-semibold">Fokus Metrika</th>
+                            <th class="p-5 font-semibold text-right">Prioritet</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-surface-700 text-slate-300">
+                        <tr class="hover:bg-surface-800/50 transition">
+                            <td class="p-5 font-medium text-white">Back-to-School Flash Sale</td>
+                            <td class="p-5"><span class="bg-blue-500/10 text-blue-400 px-2 py-1 rounded text-xs border border-blue-500/20"><i class="fa-brands fa-meta mr-1"></i>Meta</span></td>
+                            <td class="p-5 font-mono">65,000</td>
+                            <td class="p-5">ROAS > 3.5</td>
+                            <td class="p-5 text-right"><span class="text-orange-400 font-bold">Srednji</span></td>
+                        </tr>
+                        <tr class="hover:bg-surface-800/50 transition">
+                            <td class="p-5 font-medium text-white">Black Friday / Cyber Monday</td>
+                            <td class="p-5"><span class="bg-purple-500/10 text-purple-400 px-2 py-1 rounded text-xs border border-purple-500/20"><i class="fa-solid fa-layer-group mr-1"></i>Omnichannel</span></td>
+                            <td class="p-5 font-mono text-neon-cyan">180,000</td>
+                            <td class="p-5">Volume / Revenue</td>
+                            <td class="p-5 text-right"><span class="text-red-400 font-bold">Visok</span></td>
+                        </tr>
+                        <tr class="hover:bg-surface-800/50 transition">
+                            <td class="p-5 font-medium text-white">B2B Lead Generation Q3</td>
+                            <td class="p-5"><span class="bg-blue-700/10 text-blue-300 px-2 py-1 rounded text-xs border border-blue-700/20"><i class="fa-brands fa-linkedin mr-1"></i>LinkedIn</span></td>
+                            <td class="p-5 font-mono">45,000</td>
+                            <td class="p-5">CPL < €40</td>
+                            <td class="p-5 text-right"><span class="text-orange-400 font-bold">Srednji</span></td>
+                        </tr>
+                        <tr class="hover:bg-surface-800/50 transition">
+                            <td class="p-5 font-medium text-white">Winter Brand Awareness</td>
+                            <td class="p-5"><span class="bg-red-500/10 text-red-400 px-2 py-1 rounded text-xs border border-red-500/20"><i class="fa-brands fa-youtube mr-1"></i>YouTube</span></td>
+                            <td class="p-5 font-mono">50,000</td>
+                            <td class="p-5">Ad Recall / VTR</td>
+                            <td class="p-5 text-right"><span class="text-emerald-400 font-bold">Nizak</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="glass-dark border-t border-surface-700 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+            <div>
+                <i class="fa-solid fa-rocket mr-2 text-neon-purple"></i> NexGen Marketing Dashboard | Interni Dokument
+            </div>
+            <div>
+                Poslednje ažuriranje: <span class="text-slate-400">Jul 2026.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Konfiguracija Chart.js za Tamnu Temu
+            Chart.defaults.color = '#94a3b8'; // slate-400
+            Chart.defaults.font.family = '"Plus Jakarta Sans", sans-serif';
+            Chart.defaults.borderColor = 'rgba(51, 65, 85, 0.4)'; // slate-700 sa providnošću
+
+            const labels = ['Jul', 'Avg', 'Sep', 'Okt', 'Nov', 'Dec'];
+            
+            // Definicije 3 scenarija (1: Konzervativno, 2: Baseline, 3: Agresivno)
+            const scenarios = {
+                1: {
+                    name: "Konzervativno (Optimizacija)",
+                    colorClass: "text-emerald-400",
+                    budgetTxt: "€320,000",
+                    roasTxt: "4.8",
+                    cacTxt: "€14.20",
+                    cacStat: "Veoma isplativo",
+                    revenueTxt: "€1.53M",
+                    monthlyData: [40, 45, 50, 55, 80, 50],
+                    channelData: [35, 45, 10, 10] // Više na siguran Google Search
+                },
+                2: {
+                    name: "Uravnotežen Rast (Baseline)",
+                    colorClass: "text-white",
+                    budgetTxt: "€450,000",
+                    roasTxt: "4.2",
+                    cacTxt: "€18.50",
+                    cacStat: "U planu",
+                    revenueTxt: "€1.89M",
+                    monthlyData: [50, 55, 65, 75, 120, 85], // Skok u novembru (BFCM)
+                    channelData: [40, 30, 20, 10]
+                },
+                3: {
+                    name: "Agresivno (Market Share Grab)",
+                    colorClass: "text-neon-cyan",
+                    budgetTxt: "€750,000",
+                    roasTxt: "3.4", // Zbog skaliranja ROAS pada
+                    cacTxt: "€26.80",
+                    cacStat: "Skupo, ali visok volumen",
+                    revenueTxt: "€2.55M",
+                    monthlyData: [80, 90, 110, 130, 200, 140],
+                    channelData: [30, 25, 40, 5] // Puno novca u TikTok/Influensere za reach
+                }
+            };
+
+            // --- 1. Glavni Bar Chart (Mesečna potrošnja) ---
+            const ctxBar = document.getElementById('monthlySpendChart').getContext('2d');
+            
+            // Kreiranje lepog gradijenta za barove
+            const barGradient = ctxBar.createLinearGradient(0, 0, 0, 300);
+            barGradient.addColorStop(0, '#c026d3'); // fuchsia
+            barGradient.addColorStop(1, '#3b82f6'); // blue
+
+            const spendChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Planirana Potrošnja (€ hiljada)',
+                        data: scenarios[2].monthlyData,
+                        backgroundColor: barGradient,
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barThickness: 'flex',
+                        maxBarThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#fff',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return ` Budžet: €${context.parsed.y},000`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { drawBorder: false },
+                            ticks: { callback: function(value) { return '€' + value + 'k'; } }
+                        },
+                        x: { grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+
+            // --- 2. Polar Area Chart (Kanali) ---
+            const ctxPolar = document.getElementById('channelAllocationChart').getContext('2d');
+            const channelChart = new Chart(ctxPolar, {
+                type: 'polarArea',
+                data: {
+                    labels: ['Meta Ads', 'Google Ads', 'TikTok/Influenseri', 'SEO & Content'],
+                    datasets: [{
+                        data: scenarios[2].channelData,
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.7)',  // Blue
+                            'rgba(239, 68, 68, 0.7)',   // Red
+                            'rgba(168, 85, 247, 0.7)',  // Purple
+                            'rgba(16, 185, 129, 0.7)'   // Emerald
+                        ],
+                        borderColor: '#0f172a',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            ticks: { display: false },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            callbacks: {
+                                label: function(context) { return ` ${context.label}: ${context.parsed.r}%`; }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // --- 3. Logika Simulatora (Interaktivnost) ---
+            const slider = document.getElementById('strategySlider');
+            const strategyLabel = document.getElementById('strategyLabel');
+            
+            // DOM elementi KPI-jeva
+            const kpiBudget = document.getElementById('kpiBudget');
+            const kpiRoas = document.getElementById('kpiRoas');
+            const kpiCac = document.getElementById('kpiCac');
+            const cacStatus = document.getElementById('cacStatus');
+            const kpiRevenue = document.getElementById('kpiRevenue');
+
+            slider.addEventListener('input', function() {
+                const val = this.value;
+                const currentData = scenarios[val];
+
+                // Update Labele
+                strategyLabel.textContent = currentData.name;
+                strategyLabel.className = `font-bold tracking-wide ${currentData.colorClass}`;
+
+                // Animirani prelaz za brojeve (jednostavna zamena klasa za flash efekat)
+                [kpiBudget, kpiRoas, kpiCac, kpiRevenue].forEach(el => {
+                    el.style.opacity = '0.5';
+                    setTimeout(() => el.style.opacity = '1', 150);
+                });
+
+                // Update KPI tekstova
+                setTimeout(() => {
+                    kpiBudget.textContent = currentData.budgetTxt;
+                    kpiRoas.textContent = currentData.roasTxt;
+                    kpiCac.textContent = currentData.cacTxt;
+                    cacStatus.textContent = currentData.cacStat;
+                    kpiRevenue.textContent = currentData.revenueTxt;
+                    
+                    // Ako je agresivno, promeni boju ROAS-a da ukaze na rizik
+                    kpiRoas.className = val == 3 ? "text-orange-400" : "text-white";
+                }, 150);
+
+                // Update grafikona
+                spendChart.data.datasets[0].data = currentData.monthlyData;
+                spendChart.update();
+
+                channelChart.data.datasets[0].data = currentData.channelData;
+                channelChart.update();
+            });
+        });
+    </script>
+</body>
+</html>

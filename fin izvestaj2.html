@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Godišnji Finansijski Izveštaj - Aura Spa & Beauty</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Kombinacija elegantnog i modernog fonta -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'], // Za tekst i brojeve
+                        serif: ['Playfair Display', 'serif'], // Za naslove i naglašavanje
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fff1f2', // Vrlo svetla roze
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af', // Zagasito roze
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c', // Tamna bordo-roze
+                            800: '#9f1239',
+                            900: '#881337',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        },
+                        dark: '#27272a'
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(254, 205, 211, 0.5)',
+                        'glow': '0 0 15px rgba(244, 63, 94, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            /* Nežna gradient pozadina */
+            background: linear-gradient(135deg, #fffafa 0%, #fff1f2 100%);
+            color: #3f3f46;
+        }
+        
+        /* Glassmorphism efekat za kartice */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+        }
+
+        /* Stilizacija slajdera u skladu sa temom */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #fda4af;
+            cursor: pointer;
+            margin-top: -10px;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #fecdd3;
+            border-radius: 4px;
+        }
+
+        /* Animacija pri ulasku */
+        .fade-in-up {
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Utility klasa za razmak (staggering) animacija */
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="bg-white/80 backdrop-blur-md shadow-sm border-b border-brand-100 sticky top-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-brand-300 to-brand-100 flex items-center justify-center text-brand-700 shadow-glow">
+                            <i class="fa-solid fa-spa text-xl"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-serif italic font-bold text-2xl tracking-wide text-dark">Aura</span>
+                            <span class="text-[10px] tracking-widest uppercase text-brand-500 font-semibold -mt-1">Spa & Wellness</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="hidden md:inline-flex items-center px-5 py-2 border border-brand-200 rounded-full text-sm font-medium text-brand-700 bg-white hover:bg-brand-50 transition-colors shadow-sm">
+                        <i class="fa-regular fa-file-pdf mr-2"></i> Izveštaj .pdf
+                    </button>
+                    <button class="inline-flex items-center px-5 py-2 border border-transparent rounded-full text-sm font-medium text-white bg-brand-500 hover:bg-brand-600 shadow-md shadow-brand-500/40 transition-all hover:-translate-y-0.5">
+                        <i class="fa-solid fa-download mr-2"></i> Preuzmi Sve
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        <!-- Header sekcija -->
+        <div class="mb-10 text-center md:text-left flex flex-col md:flex-row justify-between items-center fade-in-up">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-serif text-dark mb-2">Finansijski Presek <span class="italic text-brand-500">2026.</span></h1>
+                <p class="text-gray-500 font-light">Detaljna analiza rasta prihoda i zadovoljstva klijenata u poređenju sa 2025. godinom.</p>
+            </div>
+            <div class="mt-6 md:mt-0 glass-card px-6 py-3 rounded-full shadow-soft inline-flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-green-400 animate-pulse"></div>
+                <span class="text-sm font-medium text-gray-700">YTY Trend: <strong class="text-green-500 font-semibold">Odličan (+22%)</strong></span>
+            </div>
+        </div>
+
+        <!-- Glavni indikatori (KPI Cards) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            
+            <!-- KPI 1: Ukupan Prihod -->
+            <div class="glass-card rounded-3xl p-6 shadow-soft relative overflow-hidden group fade-in-up delay-100">
+                <div class="absolute -right-4 -bottom-4 opacity-5 text-brand-500 text-9xl group-hover:scale-110 transition-transform duration-700">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+                <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center text-brand-500 text-xl shadow-sm">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                        <span class="bg-green-100 text-green-600 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-up"></i> 18.5%
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-500 font-medium mb-1">Ukupan Prihod (RSD)</p>
+                    <h3 class="text-3xl font-serif text-dark">42,550,000</h3>
+                    <p class="text-xs text-gray-400 mt-2">vs 35.9M (Prosle godine)</p>
+                </div>
+            </div>
+
+            <!-- KPI 2: Prosečna vrednost usluge -->
+            <div class="glass-card rounded-3xl p-6 shadow-soft relative overflow-hidden group fade-in-up delay-200">
+                <div class="absolute -right-4 -bottom-4 opacity-5 text-gold-500 text-9xl group-hover:scale-110 transition-transform duration-700">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-gold-500 text-xl shadow-sm">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <span class="bg-green-100 text-green-600 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-up"></i> 12.4%
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-500 font-medium mb-1">Prosečan Račun (AOV)</p>
+                    <h3 class="text-3xl font-serif text-dark">6,240 <span class="text-lg text-gray-400 font-sans">rsd</span></h3>
+                    <p class="text-xs text-gray-400 mt-2">Uspešan "Upsell" kozmetike</p>
+                </div>
+            </div>
+
+            <!-- KPI 3: Novi Klijenti -->
+            <div class="glass-card rounded-3xl p-6 shadow-soft relative overflow-hidden group fade-in-up delay-300">
+                <div class="absolute -right-4 -bottom-4 opacity-5 text-brand-500 text-9xl group-hover:scale-110 transition-transform duration-700">
+                    <i class="fa-regular fa-face-smile"></i>
+                </div>
+                <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center text-brand-500 text-xl shadow-sm">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <span class="bg-green-100 text-green-600 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-up"></i> 24.8%
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-500 font-medium mb-1">Broj Novih Klijenata</p>
+                    <h3 class="text-3xl font-serif text-dark">1,245</h3>
+                    <p class="text-xs text-gray-400 mt-2">Odličan ROI sa Instagrama</p>
+                </div>
+            </div>
+
+            <!-- KPI 4: Zadržavanje (Retention) -->
+            <div class="glass-card rounded-3xl p-6 shadow-soft relative overflow-hidden group fade-in-up delay-300">
+                <div class="absolute -right-4 -bottom-4 opacity-5 text-indigo-500 text-9xl group-hover:scale-110 transition-transform duration-700">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-500 text-xl shadow-sm">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </div>
+                        <span class="bg-green-100 text-green-600 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-up"></i> 5.2%
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-500 font-medium mb-1">Zadržavanje Klijenata</p>
+                    <h3 class="text-3xl font-serif text-dark">78<span class="text-2xl text-gray-500 font-sans">%</span></h3>
+                    <p class="text-xs text-gray-400 mt-2">Iznad proseka industrije (65%)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kontrola Slajdera -->
+        <div class="glass-card rounded-3xl p-8 mb-8 shadow-soft fade-in-up delay-200 border-t-4 border-t-brand-300">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                <div class="text-center md:text-left">
+                    <h3 class="text-xl font-serif text-dark"><i class="fa-solid fa-calendar-days text-brand-400 mr-2"></i> Mesečna Dinamika Prihoda</h3>
+                    <p class="text-sm text-gray-500 mt-1">Pratite rast iz meseca u mesec korišćenjem vremenske ose.</p>
+                </div>
+                <div class="mt-4 md:mt-0 font-medium text-brand-700 bg-brand-50 border border-brand-100 px-5 py-2.5 rounded-full shadow-sm">
+                    Prikazan period: <span id="monthRangeLabel" class="font-bold">Januar - Decembar</span>
+                </div>
+            </div>
+            
+            <div class="px-4 py-2">
+                <input type="range" id="monthSlider" min="1" max="12" value="12" class="w-full">
+                <div class="flex justify-between text-xs text-gray-400 mt-4 font-medium uppercase tracking-wider">
+                    <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>Maj</span><span>Jun</span><span>Jul</span><span>Avg</span><span>Sep</span><span>Okt</span><span>Nov</span><span>Dec</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grafici sekcija -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+            
+            <!-- Glavni Line Chart (Prihodi) -->
+            <div class="glass-card rounded-3xl shadow-soft p-6 lg:col-span-2 fade-in-up delay-300 flex flex-col">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-lg font-serif text-dark">Rast Prihoda: 2025 vs 2026</h3>
+                        <p class="text-xs text-gray-500">Prikazano u milionima dinara</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-brand-400"></span><span class="text-xs text-gray-500 mr-2">2026</span>
+                        <span class="w-2 h-2 rounded-full bg-gray-300"></span><span class="text-xs text-gray-500">2025</span>
+                    </div>
+                </div>
+                <div class="relative w-full flex-grow" style="min-height: 300px;">
+                    <!-- Canvas za Chart.js -->
+                    <canvas id="revenueSplineChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Doughnut Chart (Struktura prihoda) -->
+            <div class="glass-card rounded-3xl shadow-soft p-6 fade-in-up delay-300 flex flex-col">
+                <h3 class="text-lg font-serif text-dark mb-1">Struktura Prihoda</h3>
+                <p class="text-xs text-gray-500 mb-6">Odnos usluga i prodaje kozmetike</p>
+                
+                <div class="relative w-full flex-grow flex justify-center" style="min-height: 220px;">
+                    <canvas id="servicesChart"></canvas>
+                    <!-- Tekst u sredini doughnut charta -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <span class="text-2xl font-serif text-dark mt-2">100%</span>
+                        <span class="text-[10px] uppercase tracking-widest text-gray-400">Ukupno</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6 space-y-3">
+                    <div class="flex justify-between items-center text-sm">
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-brand-400"></div> Tretmani Lica (Spa)</div>
+                        <span class="font-semibold text-dark">45%</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-brand-200"></div> Masaže & Telo</div>
+                        <span class="font-semibold text-dark">30%</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-indigo-300"></div> Prodaja Kozmetike</div>
+                        <span class="font-semibold text-dark">25% <i class="fa-solid fa-arrow-trend-up text-green-500 ml-1 text-xs" title="Najveći rast ove godine"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela sa detaljima usluga -->
+        <div class="glass-card rounded-3xl shadow-soft overflow-hidden fade-in-up delay-200 mb-8">
+            <div class="p-6 border-b border-brand-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h3 class="text-xl font-serif text-dark">Top Performanse po Uslugama</h3>
+                    <p class="text-sm text-gray-500">Detaljan pregled najprofitabilnijih segmenata salona.</p>
+                </div>
+                <button class="px-4 py-2 bg-brand-50 text-brand-600 rounded-full text-sm font-medium hover:bg-brand-100 transition">Detaljan Excel <i class="fa-solid fa-file-excel ml-1"></i></button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50/50 text-gray-500 text-xs uppercase tracking-widest">
+                            <th class="p-5 font-medium border-b border-gray-100">Kategorija Usluge</th>
+                            <th class="p-5 font-medium border-b border-gray-100">Prihod 2026</th>
+                            <th class="p-5 font-medium border-b border-gray-100">YTY Rast</th>
+                            <th class="p-5 font-medium border-b border-gray-100">Margina Profita</th>
+                            <th class="p-5 font-medium border-b border-gray-100 text-center">Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-gray-100">
+                        <tr class="hover:bg-brand-50/30 transition-colors group">
+                            <td class="p-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-brand-100 text-brand-500 flex items-center justify-center"><i class="fa-solid fa-leaf"></i></div>
+                                    <span class="font-medium text-dark">Anti-age Tretmani</span>
+                                </div>
+                            </td>
+                            <td class="p-5 font-semibold text-dark">12.5M rsd</td>
+                            <td class="p-5 text-green-500 font-medium">+28.4%</td>
+                            <td class="p-5 text-gray-600">65%</td>
+                            <td class="p-5 text-center"><i class="fa-solid fa-arrow-trend-up text-green-500"></i></td>
+                        </tr>
+                        <tr class="hover:bg-brand-50/30 transition-colors group">
+                            <td class="p-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-brand-100 text-brand-500 flex items-center justify-center"><i class="fa-solid fa-spray-can-sparkles"></i></div>
+                                    <span class="font-medium text-dark">Premium Kućna Nega (Prodaja)</span>
+                                </div>
+                            </td>
+                            <td class="p-5 font-semibold text-dark">10.6M rsd</td>
+                            <td class="p-5 text-green-500 font-medium">+42.1%</td>
+                            <td class="p-5 text-gray-600">45%</td>
+                            <td class="p-5 text-center"><i class="fa-solid fa-arrow-trend-up text-green-500"></i></td>
+                        </tr>
+                        <tr class="hover:bg-brand-50/30 transition-colors group">
+                            <td class="p-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-500 flex items-center justify-center"><i class="fa-solid fa-hands-bubbles"></i></div>
+                                    <span class="font-medium text-dark">Terapeutske Masaže</span>
+                                </div>
+                            </td>
+                            <td class="p-5 font-semibold text-dark">9.2M rsd</td>
+                            <td class="p-5 text-green-500 font-medium">+15.2%</td>
+                            <td class="p-5 text-gray-600">55%</td>
+                            <td class="p-5 text-center"><i class="fa-solid fa-arrow-trend-up text-green-500"></i></td>
+                        </tr>
+                        <tr class="hover:bg-brand-50/30 transition-colors group">
+                            <td class="p-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-500 flex items-center justify-center"><i class="fa-solid fa-hand-sparkles"></i></div>
+                                    <span class="font-medium text-dark">Manikir & Pedikir Spa</span>
+                                </div>
+                            </td>
+                            <td class="p-5 font-semibold text-dark">10.2M rsd</td>
+                            <td class="p-5 text-gray-500 font-medium">+2.5%</td>
+                            <td class="p-5 text-gray-600">40%</td>
+                            <td class="p-5 text-center"><i class="fa-solid fa-minus text-gray-400"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-brand-100 mt-12 py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex flex-col items-center md:items-start">
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="fa-solid fa-spa text-brand-400"></i>
+                    <span class="font-serif italic font-bold text-xl text-dark">Aura Spa</span>
+                </div>
+                <p class="text-xs text-gray-400">Finansijski izveštaj - Strogo poverljivo.</p>
+            </div>
+            
+            <div class="text-sm text-gray-500">
+                © 2026 Aura Wellness. Sva prava zadržana.
+            </div>
+            
+            <div class="flex gap-4">
+                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-brand-500 hover:bg-brand-50 transition cursor-pointer">
+                    <i class="fa-brands fa-instagram text-lg"></i>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-brand-500 hover:bg-brand-50 transition cursor-pointer">
+                    <i class="fa-regular fa-envelope text-lg"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Konfiguracija i podaci
+            const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Avg', 'Sep', 'Okt', 'Nov', 'Dec'];
+            
+            // Podaci (u milionima dinara, realistični za dobar salon)
+            const data2025 = [2.2, 2.4, 2.8, 3.1, 3.5, 3.8, 3.2, 2.9, 3.4, 3.1, 2.5, 3.0];
+            const data2026 = [2.8, 3.1, 3.5, 3.9, 4.2, 4.5, 4.0, 3.6, 4.1, 3.8, 3.2, 4.3]; // Skok u decembru zbog praznika
+
+            // Dizajn tokeni iz Tailwinda
+            const colorBrand = '#fb7185'; // rose-400
+            const colorBrandLight = 'rgba(251, 113, 133, 0.15)'; // rose-400 sa providnošću
+            const colorGray = '#d4d4d8'; // zinc-300
+            const fontSans = "'Poppins', sans-serif";
+
+            // --- 1. Glavni Grafikon (Zakrivljena linija - Spline Chart) ---
+            Chart.defaults.font.family = fontSans;
+            Chart.defaults.color = '#71717a';
+
+            const ctxLine = document.getElementById('revenueSplineChart').getContext('2d');
+            
+            // Kreiramo gradijent za popunjavanje ispod linije (lep beauty efekat)
+            const gradient = ctxLine.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, colorBrandLight);
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+
+            const lineChart = new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Prihod 2026 (Milioni RSD)',
+                            data: data2026,
+                            borderColor: colorBrand,
+                            backgroundColor: gradient,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4, // Ovo pravi "spline" (zakrivljenu) liniju umesto oštre
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: colorBrand,
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Prihod 2025 (Milioni RSD)',
+                            data: data2025,
+                            borderColor: colorGray,
+                            borderWidth: 2,
+                            borderDash: [5, 5], // Isprekidana linija za prošlu godinu
+                            fill: false,
+                            tension: 0.4,
+                            pointRadius: 0, // Sakrijemo tačke za prošlu godinu da ne guše prikaz
+                            pointHoverRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: { display: false }, // Legenda je napravljena custom u HTML-u
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#27272a',
+                            bodyColor: '#52525b',
+                            borderColor: '#fecdd3',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxPadding: 6,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.dataset.label.split(' ')[1]}: ${context.parsed.y}M rsd`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#f4f4f5',
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                callback: function(value) { return value + 'M'; },
+                                padding: 10
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: { padding: 10 }
+                        }
+                    }
+                }
+            });
+
+            // --- 2. Doughnut Grafikon (Usluge) ---
+            const ctxDoughnut = document.getElementById('servicesChart').getContext('2d');
+            new Chart(ctxDoughnut, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tretmani Lica', 'Masaže & Telo', 'Kozmetika'],
+                    datasets: [{
+                        data: [45, 30, 25],
+                        backgroundColor: [
+                            '#fb7185', // rose-400
+                            '#fecdd3', // rose-200
+                            '#a5b4fc', // indigo-300
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%', // Tanka linija, moderan izgled
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#27272a',
+                            padding: 10,
+                            callbacks: {
+                                label: function(context) { return ` ${context.label}: ${context.parsed}%`; }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // --- 3. Logika Interaktivnog Slajdera ---
+            const slider = document.getElementById('monthSlider');
+            const monthLabel = document.getElementById('monthRangeLabel');
+
+            slider.addEventListener('input', function() {
+                const monthsToShow = parseInt(this.value);
+                
+                // Formatiranje teksta u headeru
+                if (monthsToShow === 1) {
+                    monthLabel.textContent = "Samo Januar";
+                } else {
+                    monthLabel.textContent = `Januar - ${labels[monthsToShow - 1]}`;
+                }
+
+                // Dinamičko sečenje (slice) nizova na osnovu slajdera
+                lineChart.data.labels = labels.slice(0, monthsToShow);
+                lineChart.data.datasets[0].data = data2026.slice(0, monthsToShow);
+                lineChart.data.datasets[1].data = data2025.slice(0, monthsToShow);
+                
+                // Ugrađena animacija Chart.js pri update-u
+                lineChart.update();
+            });
+        });
+    </script>
+</body>
+</html>

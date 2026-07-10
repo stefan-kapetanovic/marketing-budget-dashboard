@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YTY Analiza Gubitaka i Manjkova - Klas & Zrno D.O.O.</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Ozbiljan, analitički font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        wheat: {
+                            50: '#fdf8f6',
+                            100: '#f2e8e5',
+                            500: '#d4a373', // Boja pšenice/hleba
+                            600: '#c28b57',
+                            900: '#5c4033', // Tamno braon
+                        },
+                        danger: {
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            900: '#7f1d1d',
+                        },
+                        alert: '#f59e0b',
+                        dark: '#1c1917' // Stone 900
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #f5f5f4; /* Neutralna, siva pozadina */
+            color: #292524;
+        }
+
+        /* Stilizacija crvenog slajdera za krizni izveštaj */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 22px;
+            width: 22px;
+            border-radius: 50%;
+            background: #ef4444; /* Danger red */
+            cursor: pointer;
+            margin-top: -9px;
+            border: 4px solid #fef2f2;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.1);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #d6d3d1;
+            border-radius: 4px;
+        }
+
+        /* Upozoravajuća pulsirajuća animacija */
+        .pulse-danger {
+            animation: pulseDanger 2s infinite;
+        }
+        @keyframes pulseDanger {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Animacija pri ulasku */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="bg-white border-b border-stone-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded bg-wheat-100 flex items-center justify-center text-wheat-900 border border-wheat-500/30">
+                            <i class="fa-solid fa-wheat-awn text-xl"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-serif font-bold text-lg tracking-tight text-dark leading-none">Klas & Zrno</span>
+                            <span class="text-[10px] tracking-widest uppercase text-stone-500 font-semibold mt-1">Industrijska Pekara</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="hidden md:inline-flex items-center text-xs font-bold px-3 py-1 bg-danger-100 text-danger-600 rounded-full border border-danger-500/20">
+                        <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Interno - Strogo Poverljivo
+                    </span>
+                    <button class="inline-flex items-center px-4 py-2 bg-stone-800 hover:bg-stone-900 text-white text-sm font-medium rounded shadow transition">
+                        Preuzmi Krizni Izveštaj <i class="fa-solid fa-file-pdf ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Alert Banner -->
+        <div class="bg-danger-50 border-l-4 border-danger-500 p-4 mb-8 rounded-r-lg shadow-sm fade-in flex items-start sm:items-center justify-between flex-col sm:flex-row gap-4">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fa-solid fa-circle-exclamation text-danger-500 text-xl mt-0.5"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-bold text-danger-900">UPOZORENJE MENADŽMENTU: Kritičan pad likvidnosti i margina</h3>
+                    <p class="text-sm text-danger-600 mt-1">YTY analiza (2025 vs 2026) pokazuje drastičan pad profitabilnosti usled manjka T-500 brašna na tržištu i skoka cene energenata od 38%.</p>
+                </div>
+            </div>
+            <button class="text-xs bg-white border border-danger-200 text-danger-600 px-3 py-1.5 rounded hover:bg-danger-50 font-semibold whitespace-nowrap shadow-sm">
+                Aktiviraj Plan B
+            </button>
+        </div>
+
+        <!-- Header -->
+        <div class="mb-8 flex flex-col md:flex-row justify-between items-end fade-in" style="animation-delay: 50ms;">
+            <div>
+                <h1 class="text-3xl font-serif text-dark font-bold">YTY Analiza Manjkova i Troškova</h1>
+                <p class="text-stone-500 mt-1 font-medium">Presek performansi: Januar - Decembar 2026.</p>
+            </div>
+            <div class="mt-4 md:mt-0 text-sm text-stone-500 bg-white px-4 py-2 rounded-lg border border-stone-200 card-shadow">
+                Bazna godina: <strong class="text-stone-800">2025</strong> | Valuta: <strong class="text-stone-800">RSD</strong>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+            
+            <!-- KPI 1: Profit Margina (Najbitnije za pekaru) -->
+            <div class="bg-white rounded-xl p-5 border border-stone-200 card-shadow fade-in relative overflow-hidden" style="animation-delay: 100ms;">
+                <div class="absolute top-0 left-0 w-1 h-full bg-danger-500"></div>
+                <div class="flex justify-between items-start mb-2">
+                    <p class="text-sm font-semibold text-stone-500">Neto Profitna Marža</p>
+                    <div class="w-8 h-8 rounded bg-danger-50 flex items-center justify-center text-danger-500 pulse-danger">
+                        <i class="fa-solid fa-arrow-trend-down"></i>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-bold text-dark mb-1">3.2%</h3>
+                <div class="flex items-center text-xs font-medium">
+                    <span class="text-danger-600 bg-danger-50 px-1.5 py-0.5 rounded mr-2">-4.6 pp</span>
+                    <span class="text-stone-400">YTY (Pad sa 7.8%)</span>
+                </div>
+            </div>
+
+            <!-- KPI 2: Nabavna cena brašna -->
+            <div class="bg-white rounded-xl p-5 border border-stone-200 card-shadow fade-in relative" style="animation-delay: 150ms;">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="text-sm font-semibold text-stone-500">Cena Brašna (po toni)</p>
+                    <div class="w-8 h-8 rounded bg-alert/10 flex items-center justify-center text-alert">
+                        <i class="fa-solid fa-sack-xmark"></i>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-bold text-dark mb-1">42,500 <span class="text-lg text-stone-400">rsd</span></h3>
+                <div class="flex items-center text-xs font-medium">
+                    <span class="text-danger-600 bg-danger-50 px-1.5 py-0.5 rounded mr-2"><i class="fa-solid fa-arrow-up mr-1"></i>+38.5%</span>
+                    <span class="text-stone-400">YTY Zbog loše žetve</span>
+                </div>
+            </div>
+
+            <!-- KPI 3: Proizvodni Volumen (Manjak) -->
+            <div class="bg-white rounded-xl p-5 border border-stone-200 card-shadow fade-in relative" style="animation-delay: 200ms;">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="text-sm font-semibold text-stone-500">Volumen Proizvodnje</p>
+                    <div class="w-8 h-8 rounded bg-stone-100 flex items-center justify-center text-stone-600">
+                        <i class="fa-solid fa-industry"></i>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-bold text-dark mb-1">12,450 <span class="text-lg text-stone-400">tona</span></h3>
+                <div class="flex items-center text-xs font-medium">
+                    <span class="text-danger-600 bg-danger-50 px-1.5 py-0.5 rounded mr-2"><i class="fa-solid fa-arrow-down mr-1"></i>-12.4%</span>
+                    <span class="text-stone-400">Manjak sirovina (Q3/Q4)</span>
+                </div>
+            </div>
+
+            <!-- KPI 4: Rashodi energije -->
+            <div class="bg-white rounded-xl p-5 border border-stone-200 card-shadow fade-in relative" style="animation-delay: 250ms;">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="text-sm font-semibold text-stone-500">Troškovi Energenata</p>
+                    <div class="w-8 h-8 rounded bg-orange-100 flex items-center justify-center text-orange-500">
+                        <i class="fa-solid fa-fire-burner"></i>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-bold text-dark mb-1">18.2 <span class="text-lg text-stone-400">mil rsd</span></h3>
+                <div class="flex items-center text-xs font-medium">
+                    <span class="text-danger-600 bg-danger-50 px-1.5 py-0.5 rounded mr-2"><i class="fa-solid fa-arrow-up mr-1"></i>+45.2%</span>
+                    <span class="text-stone-400">Skočila cena gasa za peći</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 mb-8 border border-stone-200 card-shadow fade-in" style="animation-delay: 300ms;">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-lg font-bold text-dark"><i class="fa-solid fa-timeline text-danger-500 mr-2"></i> Praćenje Eskalacije Troškova</h3>
+                    <p class="text-sm text-stone-500">Pomerajte slajder da vidite tačan mesec (prelomnu tačku) kada su troškovi premašili ciljani prihod.</p>
+                </div>
+                <div class="mt-4 md:mt-0 px-4 py-2 bg-stone-50 rounded border border-stone-200 text-sm font-semibold text-stone-700">
+                    Period analize: <span id="monthLabel" class="text-danger-600">Januar - Decembar</span>
+                </div>
+            </div>
+            <div class="px-2">
+                <input type="range" id="crisisSlider" min="1" max="12" value="12">
+                <div class="flex justify-between text-xs text-stone-400 mt-3 font-semibold uppercase tracking-wider">
+                    <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>Maj</span><span>Jun</span><span>Jul</span><span>Avg</span><span>Sep</span><span class="text-danger-400 font-bold">Okt</span><span class="text-danger-500 font-bold">Nov</span><span class="text-danger-600 font-bold">Dec</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            
+            <!-- Glavni Grafikon - Prihodi vs Troškovi (Makaze) -->
+            <div class="bg-white rounded-xl p-6 border border-stone-200 card-shadow lg:col-span-2 fade-in flex flex-col" style="animation-delay: 350ms;">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-dark">Prihodi vs Operativni Troškovi (2026)</h3>
+                        <p class="text-xs text-stone-500">Milioni RSD. Primetite "efekat makaza" u drugoj polovini godine gde troškovi rastu brže od cene finalnog proizvoda.</p>
+                    </div>
+                </div>
+                <div class="relative w-full flex-grow" style="min-height: 280px;">
+                    <canvas id="costVsRevenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Doughnut Chart - Struktura troškova -->
+            <div class="bg-white rounded-xl p-6 border border-stone-200 card-shadow fade-in flex flex-col" style="animation-delay: 400ms;">
+                <h3 class="text-lg font-bold text-dark mb-1">Anatomija Troškova (OPEX)</h3>
+                <p class="text-xs text-stone-500 mb-6">Učešće u ukupnim troškovima proizvodnje</p>
+                
+                <div class="relative w-full flex-grow flex justify-center" style="min-height: 200px;">
+                    <canvas id="opexStructureChart"></canvas>
+                </div>
+                
+                <div class="mt-6 space-y-3">
+                    <div class="flex justify-between items-center text-sm border-b border-stone-100 pb-2">
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-wheat-500"></div> Sirovine (Brašno, Kvasac)</div>
+                        <div class="text-right">
+                            <span class="font-bold text-dark">52%</span>
+                            <span class="text-danger-500 text-xs ml-1 font-bold">(+12%)</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center text-sm border-b border-stone-100 pb-2">
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-orange-400"></div> Energenti (Peći)</div>
+                        <div class="text-right">
+                            <span class="font-bold text-dark">28%</span>
+                            <span class="text-danger-500 text-xs ml-1 font-bold">(+8%)</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-stone-400"></div> Radna snaga i Logistika</div>
+                        <div class="text-right">
+                            <span class="font-bold text-dark">20%</span>
+                            <span class="text-stone-400 text-xs ml-1 font-bold">(-20%)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-stone-200 card-shadow overflow-hidden fade-in" style="animation-delay: 450ms;">
+            <div class="bg-stone-50 border-b border-stone-200 p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                <div>
+                    <h3 class="text-lg font-bold text-dark">Izveštaj o Manjku po Proizvodnim Linijama</h3>
+                    <p class="text-sm text-stone-500">Identifikacija sektora koji generišu najveći negativni disbalans.</p>
+                </div>
+                <button class="mt-3 sm:mt-0 px-3 py-1.5 bg-white border border-stone-300 text-stone-700 text-sm font-medium rounded hover:bg-stone-100 transition">
+                    Izvezi .CSV
+                </button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-white text-stone-500 text-xs uppercase tracking-wider">
+                            <th class="p-4 font-semibold border-b border-stone-200">Kategorija Proizvoda</th>
+                            <th class="p-4 font-semibold border-b border-stone-200">Volumen (t) YTY</th>
+                            <th class="p-4 font-semibold border-b border-stone-200">Prihod (RSD)</th>
+                            <th class="p-4 font-semibold border-b border-stone-200">Status Margine</th>
+                            <th class="p-4 font-semibold border-b border-stone-200 text-right">Manjak (Deficit)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-stone-100 bg-white">
+                        <tr class="hover:bg-danger-50/30 transition-colors">
+                            <td class="p-4 font-medium text-dark flex items-center gap-2">
+                                <i class="fa-solid fa-bread-slice text-wheat-600"></i> Osnovni Beli Hleb (T-500)
+                            </td>
+                            <td class="p-4 text-danger-600 font-semibold"><i class="fa-solid fa-arrow-down text-xs"></i> -15.2%</td>
+                            <td class="p-4 text-stone-600">120.4M</td>
+                            <td class="p-4"><span class="bg-danger-100 text-danger-700 text-xs font-bold px-2 py-1 rounded">Negativna (-2%)</span></td>
+                            <td class="p-4 text-right font-bold text-danger-600">- 4.2M rsd</td>
+                        </tr>
+                        <tr class="hover:bg-danger-50/30 transition-colors">
+                            <td class="p-4 font-medium text-dark flex items-center gap-2">
+                                <i class="fa-solid fa-cookie text-wheat-600"></i> Slatka Peciva (Kroasani)
+                            </td>
+                            <td class="p-4 text-stone-500"><i class="fa-solid fa-arrow-down text-xs"></i> -2.1%</td>
+                            <td class="p-4 text-stone-600">85.2M</td>
+                            <td class="p-4"><span class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded">Ugrožena (4%)</span></td>
+                            <td class="p-4 text-right font-bold text-orange-500">- 1.1M rsd</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 transition-colors">
+                            <td class="p-4 font-medium text-dark flex items-center gap-2">
+                                <i class="fa-solid fa-wheat-awn-circle-exclamation text-wheat-600"></i> Zanatski (Artisan) Hleb
+                            </td>
+                            <td class="p-4 text-green-600 font-semibold"><i class="fa-solid fa-arrow-up text-xs"></i> +4.5%</td>
+                            <td class="p-4 text-stone-600">45.8M</td>
+                            <td class="p-4"><span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">Stabilna (18%)</span></td>
+                            <td class="p-4 text-right font-bold text-stone-400">Nema</td>
+                        </tr>
+                        <tr class="hover:bg-danger-50/30 transition-colors bg-danger-50/10">
+                            <td class="p-4 font-medium text-dark flex items-center gap-2">
+                                <i class="fa-solid fa-truck-moving text-wheat-600"></i> Veleprodaja Smrznuto
+                            </td>
+                            <td class="p-4 text-danger-600 font-semibold"><i class="fa-solid fa-arrow-down text-xs"></i> -22.4%</td>
+                            <td class="p-4 text-stone-600">95.0M</td>
+                            <td class="p-4"><span class="bg-danger-100 text-danger-700 text-xs font-bold px-2 py-1 rounded">Kritična (-8%)</span></td>
+                            <td class="p-4 text-right font-bold text-danger-600">- 12.5M rsd</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-stone-200 mt-4 py-8 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-stone-500">
+            <div>
+                <i class="fa-solid fa-wheat-awn mr-2"></i> Klas & Zrno D.O.O. | Analitika Kriznog Menadžmenta
+            </div>
+            <div>
+                Generisano: <span class="font-mono text-xs">Q4 2026</span> | Strogo Poverljivo
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Konfiguracija fontova za Chart.js
+            Chart.defaults.font.family = "'Outfit', sans-serif";
+            Chart.defaults.color = '#78716c'; // stone-500
+
+            const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Avg', 'Sep', 'Okt', 'Nov', 'Dec'];
+            
+            // Podaci (Krizni scenario: Troškovi rastu brže od prihoda)
+            // Prihodi stagniraju ili blago rastu zbog inflacije
+            const revenueData = [28, 29, 29, 30, 30, 29, 28, 29, 30, 31, 32, 33]; 
+            // Operativni troškovi drastično skaču u drugoj polovini godine (cena gasa, struje, loša žetva)
+            const costData =    [22, 23, 24, 25, 26, 27, 28, 30, 33, 35, 37, 39]; 
+
+            const colorDanger = '#ef4444'; // red-500 (Za troškove)
+            const colorWheat = '#d4a373'; // wheat-500 (Za prihode)
+
+            // --- 1. Glavni Line Chart (Makaze: Prihodi vs Troškovi) ---
+            const ctxCostRev = document.getElementById('costVsRevenueChart').getContext('2d');
+            
+            // Područje ispod linije troškova da se naglasi opasnost
+            const dangerGradient = ctxCostRev.createLinearGradient(0, 0, 0, 300);
+            dangerGradient.addColorStop(0, 'rgba(239, 68, 68, 0.2)');
+            dangerGradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+
+            const costRevChart = new Chart(ctxCostRev, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Operativni Troškovi (OPEX)',
+                            data: costData,
+                            borderColor: colorDanger,
+                            backgroundColor: dangerGradient,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: colorDanger,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            order: 1 // Da bude iznad
+                        },
+                        {
+                            label: 'Ukupni Prihodi',
+                            data: revenueData,
+                            borderColor: colorWheat,
+                            borderWidth: 3,
+                            borderDash: [5, 5], // Isprekidana linija
+                            fill: false,
+                            tension: 0.3,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: colorWheat,
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            order: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { usePointStyle: true, boxWidth: 8 }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1c1917',
+                            titleColor: '#fff',
+                            bodyColor: '#e7e5e4',
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.dataset.label}: ${context.parsed.y}M RSD`;
+                                }
+                            }
+                        },
+                        // Custom plugin za crtanje zone gubitka (gde su troškovi veći od prihoda)
+                        annotation: {
+                            // (Ovo je mock vizuelni efekat, u punoj Chart.js implementaciji koristi se chartjs-plugin-annotation)
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 15, // Podesen minimum da se bolje vidi presek
+                            grid: { color: '#f5f5f4', drawBorder: false },
+                            ticks: { callback: function(value) { return value + 'M'; } }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: false }
+                        }
+                    }
+                }
+            });
+
+            // --- 2. Doughnut Chart (Struktura OPEX-a) ---
+            const ctxOpex = document.getElementById('opexStructureChart').getContext('2d');
+            new Chart(ctxOpex, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sirovine (Brašno, Kvasac)', 'Energenti (Peći/Struja)', 'Radna snaga & Log.'],
+                    datasets: [{
+                        data: [52, 28, 20],
+                        backgroundColor: ['#d4a373', '#fb923c', '#a8a29e'],
+                        borderWidth: 0,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1c1917',
+                            callbacks: {
+                                label: function(context) { return ` ${context.label}: ${context.parsed}%`; }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // --- 3. Logika Slajdera za Krizni Menadžment ---
+            const slider = document.getElementById('crisisSlider');
+            const monthLabel = document.getElementById('monthLabel');
+
+            slider.addEventListener('input', function() {
+                const monthsToShow = parseInt(this.value);
+                
+                // Menjanje teksta u zavisnosti od izabranog meseca
+                if (monthsToShow <= 6) {
+                    monthLabel.textContent = `Januar - ${labels[monthsToShow - 1]} (Stabilan period)`;
+                    monthLabel.className = "text-stone-600";
+                } else if (monthsToShow > 6 && monthsToShow <= 9) {
+                    monthLabel.textContent = `Januar - ${labels[monthsToShow - 1]} (Početak deficita)`;
+                    monthLabel.className = "text-orange-500 font-bold";
+                } else {
+                    monthLabel.textContent = `Januar - ${labels[monthsToShow - 1]} (Kritičan period)`;
+                    monthLabel.className = "text-danger-600 font-bold";
+                }
+
+                // Update grafikona
+                costRevChart.data.labels = labels.slice(0, monthsToShow);
+                costRevChart.data.datasets[0].data = costData.slice(0, monthsToShow);
+                costRevChart.data.datasets[1].data = revenueData.slice(0, monthsToShow);
+                
+                costRevChart.update();
+            });
+        });
+    </script>
+</body>
+</html>

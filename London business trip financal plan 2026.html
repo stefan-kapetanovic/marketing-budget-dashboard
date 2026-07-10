@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>London Travel & Visa Cost Report (2026)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        london: {
+                            blue: '#002F6C',
+                            red: '#CF142B',
+                            dark: '#0F172A',
+                            slate: '#1E293B',
+                            light: '#F8FAFC'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-london-light text-slate-800 font-sans antialiased selection:bg-london-red selection:text-white">
+
+    <!-- Top Sticky Header for Mobile -->
+    <header class="lg:hidden sticky top-0 z-50 bg-london-blue text-white px-4 py-3 shadow-md flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <svg class="w-6 h-6 text-london-red" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.53c-.26-.81-1-1.4-1.9-1.4h-1v-3c0-.55-.45-1-1-1h-6v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.4z"/>
+            </svg>
+            <span class="font-bold tracking-wide">London 2026</span>
+        </div>
+        <button id="menu-btn" class="p-2 text-white hover:text-slate-200 focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
+    </header>
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar Navigation (Hidden on mobile, sticky on desktop) -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-london-blue text-white p-6 transform -translate-x-full lg:translate-x-0 lg:sticky lg:h-screen transition-transform duration-300 ease-in-out flex flex-col justify-between shadow-2xl">
+            <div>
+                <!-- Brand / Logo -->
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="relative w-10 h-10 bg-london-red rounded-lg overflow-hidden flex items-center justify-center shadow">
+                        <svg class="w-8 h-8 text-white" viewBox="0 0 100 100" fill="currentColor">
+                            <rect width="100" height="100" fill="#002F6C"/>
+                            <path d="M0,0 L100,100 M100,0 L0,100" stroke="#fff" stroke-width="10"/>
+                            <path d="M0,0 L100,100 M100,0 L0,100" stroke="#CF142B" stroke-width="6"/>
+                            <path d="M50,0 L50,100 M0,50 L100,50" stroke="#fff" stroke-width="16"/>
+                            <path d="M50,0 L50,100 M0,50 L100,50" stroke="#CF142B" stroke-width="10"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="font-black text-lg tracking-tight leading-none">LONDON</h1>
+                        <span class="text-xs text-slate-300">Travel & Visa Guide</span>
+                    </div>
+                </div>
+
+                <!-- Nav Links -->
+                <nav class="space-y-1">
+                    <a href="#hero" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-lg bg-white/10 text-white font-medium transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        <span>Overview</span>
+                    </a>
+                    <a href="#visa" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-white/5 hover:text-white transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span>Visa Requirements</span>
+                    </a>
+                    <a href="#expenses" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-white/5 hover:text-white transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Daily Expenses</span>
+                    </a>
+                    <a href="#taxi" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-white/5 hover:text-white transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                        <span>Taxis & Rides</span>
+                    </a>
+                    <a href="#sim" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-white/5 hover:text-white transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        <span>SIM & Networks</span>
+                    </a>
+                    <a href="#budget" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-white/5 hover:text-white transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span>Budget Estimator</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Footer Meta info -->
+            <div class="border-t border-white/10 pt-4">
+                <div class="flex items-center justify-between text-xs text-slate-400">
+                    <span>Est. Rates 2026</span>
+                    <span class="bg-london-red px-1.5 py-0.5 rounded text-[10px] text-white font-bold">LIVE</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-2">Prepared for Serbian Passport Holders visiting London.</p>
+            </div>
+        </aside>
+
+        <!-- Overlay for mobile menu -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
+
+        <!-- Main Scrollable Container -->
+        <main class="flex-1 w-full lg:max-w-[calc(100vw-16rem)] min-h-screen">
+            
+            <!-- Hero Banner -->
+            <section id="hero" class="relative bg-gradient-to-r from-london-blue to-slate-900 text-white py-16 px-6 lg:px-12 flex flex-col justify-center min-h-[45vh] overflow-hidden">
+                <div class="absolute inset-0 opacity-10 pointer-events-none bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=1470&auto=format&fit=crop');"></div>
+                
+                <div class="max-w-3xl relative z-10 space-y-4">
+                    <span class="bg-london-red text-white text-xs uppercase font-extrabold px-3 py-1 rounded-full tracking-wider shadow">OFFICIAL VISITOR GUIDELINES</span>
+                    <h2 class="text-4xl lg:text-5xl font-black tracking-tight leading-tight">London Travel & Visa Cost Report</h2>
+                    <p class="text-lg text-slate-200 font-normal leading-relaxed">
+                        A detailed, interactive roadmap designed for Serbian passport holders planning trips to England. Master the digital transition, map your daily expenses, discover network setups, and interactively calculate your customized trip budget.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
+                        <div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10">
+                            <span class="block text-xs text-slate-300">Mandatory Visa</span>
+                            <span class="block text-xl font-bold mt-1">£135.00</span>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10">
+                            <span class="block text-xs text-slate-300">Transit Cap (1 day)</span>
+                            <span class="block text-xl font-bold mt-1">£8.90</span>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10">
+                            <span class="block text-xs text-slate-300">Average Pint</span>
+                            <span class="block text-xl font-bold mt-1">£6.50 – £8.50</span>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10">
+                            <span class="block text-xs text-slate-300">FX Conversion</span>
+                            <span class="block text-xl font-bold mt-1 text-emerald-400">1 GBP = 9.06 CNY</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Content Grid -->
+            <div class="p-6 lg:p-12 space-y-12">
+                
+                <!-- Part 1: Visa Requirements -->
+                <section id="visa" class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-slate-200 scroll-mt-24">
+                    <div class="border-b border-slate-100 pb-4 mb-6">
+                        <span class="text-london-red font-bold text-xs uppercase tracking-wider">Part 1</span>
+                        <h3 class="text-2xl font-black text-slate-900 mt-1">UK Visa Requirements & Digital Transition</h3>
+                        <p class="text-slate-500 text-sm mt-1">Step-by-step clearance guidelines specifically for Serbian citizens.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        
+                        <!-- Details -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <div class="bg-slate-50 border-l-4 border-london-blue p-4 rounded-r-xl">
+                                <h4 class="font-bold text-slate-900 flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-london-blue" fill="currentColor" viewBox="0 0 20 20"><path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/></svg>
+                                    Crucial Rule for Serbian Travelers
+                                </h4>
+                                <p class="text-sm text-slate-600 mt-1">
+                                    The new UK **ETA (Electronic Travel Authorisation)** only applies to countries whose citizens can travel visa-free. As a Serbian passport holder, **you still need to apply for the Standard Visitor Visa** before departing.
+                                </p>
+                            </div>
+
+                            <div class="space-y-4">
+                                <h4 class="font-bold text-slate-800 text-lg">Process Timeline:</h4>
+                                <ol class="relative border-l border-slate-200 ml-3 space-y-6">
+                                    <li class="mb-2 ml-6">
+                                        <span class="absolute flex items-center justify-center w-6 h-6 bg-slate-100 rounded-full -left-3 ring-8 ring-white text-xs font-bold text-slate-700">1</span>
+                                        <h5 class="font-bold text-slate-900 text-sm">Online Application (gov.uk)</h5>
+                                        <p class="text-xs text-slate-500 mt-0.5">Submit comprehensive details on salary, ties, and agenda. Payment of **£135.00** visa fee is finalized during submission.</p>
+                                    </li>
+                                    <li class="mb-2 ml-6">
+                                        <span class="absolute flex items-center justify-center w-6 h-6 bg-slate-100 rounded-full -left-3 ring-8 ring-white text-xs font-bold text-slate-700">2</span>
+                                        <h5 class="font-bold text-slate-900 text-sm">Self-Upload Supporting Docs</h5>
+                                        <p class="text-xs text-slate-500 mt-0.5">All assets must be translated to English by a court interpreter. Upload digitized pay-slips, bank records, and booking plans directly on the VFS Global web portal.</p>
+                                    </li>
+                                    <li class="mb-2 ml-6">
+                                        <span class="absolute flex items-center justify-center w-6 h-6 bg-slate-100 rounded-full -left-3 ring-8 ring-white text-xs font-bold text-slate-700">3</span>
+                                        <h5 class="font-bold text-slate-900 text-sm">Biometrics Appointment (Belgrade)</h5>
+                                        <p class="text-xs text-slate-500 mt-0.5">Visit VFS Global in New Belgrade to register fingerprints and photos. **Your physical passport is handed back to you immediately.**</p>
+                                    </li>
+                                    <li class="ml-6">
+                                        <span class="absolute flex items-center justify-center w-6 h-6 bg-emerald-100 rounded-full -left-3 ring-8 ring-white text-xs font-bold text-emerald-700">✓</span>
+                                        <h5 class="font-bold text-slate-900 text-sm">The "eVisa" Transition</h5>
+                                        <p class="text-xs text-slate-500 mt-0.5">Physical sticker vignettes are eliminated. Your status is stored entirely digitally. Link your visa directly to your passport by setting up an official **UKVI Account** online.</p>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- Checklist Tracker Card -->
+                        <div class="bg-slate-50 rounded-xl p-6 border border-slate-100 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-black text-slate-900 text-lg flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-london-red" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg>
+                                    Interactive Prep Checklist
+                                </h4>
+                                <p class="text-xs text-slate-500 mt-1">Check off items as you compile them to ensure your profile is application-ready.</p>
+                                
+                                <div class="space-y-3 mt-6">
+                                    <label class="flex items-start space-x-3 cursor-pointer select-none">
+                                        <input type="checkbox" class="w-4 h-4 rounded text-london-blue border-slate-300 focus:ring-london-blue mt-1" onchange="updateProgress()">
+                                        <span class="text-xs text-slate-700 font-medium">Original Serbian Passport (with empty pages)</span>
+                                    </label>
+                                    <label class="flex items-start space-x-3 cursor-pointer select-none">
+                                        <input type="checkbox" class="w-4 h-4 rounded text-london-blue border-slate-300 focus:ring-london-blue mt-1" onchange="updateProgress()">
+                                        <span class="text-xs text-slate-700 font-medium">3-6 Months active bank statements (with translations)</span>
+                                    </label>
+                                    <label class="flex items-start space-x-3 cursor-pointer select-none">
+                                        <input type="checkbox" class="w-4 h-4 rounded text-london-blue border-slate-300 focus:ring-london-blue mt-1" onchange="updateProgress()">
+                                        <span class="text-xs text-slate-700 font-medium">Proof of Employment contract / student status (translated)</span>
+                                    </label>
+                                    <label class="flex items-start space-x-3 cursor-pointer select-none">
+                                        <input type="checkbox" class="w-4 h-4 rounded text-london-blue border-slate-300 focus:ring-london-blue mt-1" onchange="updateProgress()">
+                                        <span class="text-xs text-slate-700 font-medium">Detailed flight itinerary & lodging confirmations</span>
+                                    </label>
+                                    <label class="flex items-start space-x-3 cursor-pointer select-none">
+                                        <input type="checkbox" class="w-4 h-4 rounded text-london-blue border-slate-300 focus:ring-london-blue mt-1" onchange="updateProgress()">
+                                        <span class="text-xs text-slate-700 font-medium">Digital copies uploaded to VFS portal in PDF format</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-4 border-t border-slate-200">
+                                <div class="flex justify-between items-center text-xs text-slate-600 mb-2">
+                                    <span>Preparation Progress</span>
+                                    <span id="progress-percent" class="font-bold">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                    <div id="progress-bar" class="bg-london-red h-full transition-all duration-300 w-0"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- Part 2: Daily Expenses -->
+                <section id="expenses" class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-slate-200 scroll-mt-24">
+                    <div class="border-b border-slate-100 pb-4 mb-6">
+                        <span class="text-london-red font-bold text-xs uppercase tracking-wider">Part 2</span>
+                        <h3 class="text-2xl font-black text-slate-900 mt-1">Daily Expenses & Pricing Index</h3>
+                        <p class="text-slate-500 text-sm mt-1">Realistic daily expectations across multiple categories (excluding hostels).</p>
+                    </div>
+
+                    <!-- Category Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        <!-- Lodging -->
+                        <div class="border border-slate-100 rounded-xl p-5 hover:shadow-md transition-all">
+                            <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600 mb-4">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-lg">Accommodation</h4>
+                            <p class="text-xs text-slate-500 mt-1">Comfort-first private options. Hostels and shared dorms have been excluded.</p>
+                            
+                            <ul class="space-y-3 mt-4 text-xs">
+                                <li class="flex justify-between items-center py-2 border-b border-slate-50">
+                                    <span class="text-slate-600">Standard Private Room / Guesthouse</span>
+                                    <span class="font-bold text-slate-900">£85 – £110 <span class="text-[10px] text-slate-400 font-normal">/ night</span></span>
+                                </li>
+                                <li class="flex justify-between items-center py-2 border-b border-slate-50">
+                                    <span class="text-slate-600">3-Star Mid-Range Room</span>
+                                    <span class="font-bold text-slate-900">£110 – £200 <span class="text-[10px] text-slate-400 font-normal">/ night</span></span>
+                                </li>
+                                <li class="flex justify-between items-center py-2">
+                                    <span class="text-slate-600">Upscale Boutique Hotel</span>
+                                    <span class="font-bold text-slate-900">£200 – £400+ <span class="text-[10px] text-slate-400 font-normal">/ night</span></span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Dining -->
+                        <div class="border border-slate-100 rounded-xl p-5 hover:shadow-md transition-all">
+                            <div class="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600 mb-4">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-lg">Food & Drink</h4>
+                            <p class="text-xs text-slate-500 mt-1">Save with daytime supermarket meal deals or local street stalls.</p>
+                            
+                            <ul class="space-y-3 mt-4 text-xs">
+                                <li class="flex justify-between items-center py-2 border-b border-slate-50">
+                                    <span class="text-slate-600">Supermarket Meal Deals</span>
+                                    <span class="font-bold text-slate-900">£4.00 – £4.50</span>
+                                </li>
+                                <li class="flex justify-between items-center py-2 border-b border-slate-50">
+                                    <span class="text-slate-600">Street Food & Lunch Stalls</span>
+                                    <span class="font-bold text-slate-900">£10.00 – £18.00</span>
+                                </li>
+                                <li class="flex justify-between items-center py-2 border-b border-slate-50">
+                                    <span class="text-slate-600">Pub / Restaurant Dinner</span>
+                                    <span class="font-bold text-slate-900">£25.00 – £45.00</span>
+                                </li>
+                                <li class="flex justify-between items-center py-2">
+                                    <span class="text-slate-600">Local Draft Beer (Pint)</span>
+                                    <span class="font-bold text-slate-900">£6.50 – £8.50</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Transit -->
+                        <div class="border border-slate-100 rounded-xl p-5 hover:shadow-md transition-all">
+                            <div class="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600 mb-4">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-lg">Public Transportation</h4>
+                            <p class="text-xs text-slate-500 mt-1">Rely entirely on contactless. Never pay individual single cash tickets.</p>
+                            
+                            <ul class="space-y-3 mt-4 text-xs">
+                                <li class="flex justify-between items-center py-2 border-b border-slate-50">
+                                    <span class="text-slate-600">Zones 1–2 Tube Daily Cap</span>
+                                    <span class="font-bold text-slate-900">£8.90 <span class="text-[10px] text-slate-400 font-normal">/ day</span></span>
+                                </li>
+                                <li class="flex justify-between items-center py-2 border-b border-slate-50">
+                                    <span class="text-slate-600">Bus-Only Daily Cap</span>
+                                    <span class="font-bold text-slate-900">£5.50 <span class="text-[10px] text-slate-400 font-normal">/ day</span></span>
+                                </li>
+                                <li class="flex justify-between items-center py-2">
+                                    <span class="text-slate-600">Contactless Card Setup</span>
+                                    <span class="font-bold text-emerald-600">Supported</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+
+                    <!-- 3 Meals a Day Breakdown Section -->
+                    <div class="mt-8 pt-6 border-t border-slate-100">
+                        <h4 class="font-black text-slate-900 text-base mb-2 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-london-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+                            </svg>
+                            Budgeting 3 Meals a Day & Daily Supplements
+                        </h4>
+                        <p class="text-xs text-slate-500 mb-6 leading-relaxed max-w-4xl">
+                            How you space your meals in London heavily impacts your daily cash flow. While basic indicators (like the average pint range shown in the metrics header card captured in <span class="font-mono bg-slate-100 px-1 py-0.5 rounded text-slate-700">image_c1ddfe.png</span>) provide a great baseline, we have analyzed the average total daily expense assuming you eat three distinct meals. To keep your food budget realistic, consider adding a **Daily Meal Supplement** for coffees, snacks, or alcoholic drinks on top of your main meals.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            
+                            <!-- Value/Budget 3 Meals -->
+                            <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 hover:border-slate-200 transition-all flex flex-col justify-between">
+                                <div>
+                                    <span class="text-[10px] uppercase font-bold tracking-wider text-london-blue">Plan A: Local Value</span>
+                                    <h5 class="font-black text-slate-900 text-sm mt-1">Supermarkets & Markets</h5>
+                                    
+                                    <ul class="space-y-2 mt-4 text-xs border-t border-slate-200/50 pt-3">
+                                        <li class="flex justify-between"><span class="text-slate-500">Breakfast (Pastry + Instant Coffee)</span><span class="font-semibold">£3.50</span></li>
+                                        <li class="flex justify-between"><span class="text-slate-500">Lunch (Meal Deal / Wrap)</span><span class="font-semibold">£4.50</span></li>
+                                        <li class="flex justify-between"><span class="text-slate-500">Dinner (Market Stall / Fast Casual)</span><span class="font-semibold">£13.00</span></li>
+                                    </ul>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-slate-200/50 flex justify-between items-baseline">
+                                    <span class="text-xs text-slate-500 font-medium">Daily Food Expense:</span>
+                                    <span class="text-base font-black text-london-blue">£21.00 <span class="text-[10px] text-slate-400 font-normal">/ day</span></span>
+                                </div>
+                            </div>
+
+                            <!-- Mid-Range 3 Meals -->
+                            <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <span class="text-[10px] uppercase font-bold tracking-wider text-london-red">Plan B: Balanced Comfort</span>
+                                    <h5 class="font-black text-slate-900 text-sm mt-1">Classic Cafes & Local Pubs</h5>
+                                    
+                                    <ul class="space-y-2 mt-4 text-xs border-t border-slate-200/50 pt-3">
+                                        <li class="flex justify-between"><span class="text-slate-500">Breakfast (Café breakfast + coffee)</span><span class="font-semibold">£12.00</span></li>
+                                        <li class="flex justify-between"><span class="text-slate-500">Lunch (Gourmet pub / Diner lunch)</span><span class="font-semibold">£18.00</span></li>
+                                        <li class="flex justify-between"><span class="text-slate-500">Dinner (Sit-down diner + service)</span><span class="font-semibold">£30.00</span></li>
+                                    </ul>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-slate-200/50 flex justify-between items-baseline">
+                                    <span class="text-xs text-slate-500 font-medium">Daily Food Expense:</span>
+                                    <span class="text-base font-black text-london-red">£60.00 <span class="text-[10px] text-slate-400 font-normal">/ day</span></span>
+                                </div>
+                            </div>
+
+                            <!-- Premium 3 Meals -->
+                            <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 hover:border-slate-200 transition-all flex flex-col justify-between">
+                                <div>
+                                    <span class="text-[10px] uppercase font-bold tracking-wider text-slate-500">Plan C: High-End Dining</span>
+                                    <h5 class="font-black text-slate-900 text-sm mt-1">Full Service & Fine Spots</h5>
+                                    
+                                    <ul class="space-y-2 mt-4 text-xs border-t border-slate-200/50 pt-3">
+                                        <li class="flex justify-between"><span class="text-slate-500">Breakfast (Boutique hotel/café)</span><span class="font-semibold">£22.00</span></li>
+                                        <li class="flex justify-between"><span class="text-slate-500">Lunch (Trendy sit-down bistro)</span><span class="font-semibold">£38.00</span></li>
+                                        <li class="flex justify-between"><span class="text-slate-500">Dinner (Premium venue + wine)</span><span class="font-semibold">£65.00</span></li>
+                                    </ul>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-slate-200/50 flex justify-between items-baseline">
+                                    <span class="text-xs text-slate-500 font-medium">Daily Food Expense:</span>
+                                    <span class="text-base font-black text-slate-800">£125.00 <span class="text-[10px] text-slate-400 font-normal">/ day</span></span>
+                                </div>
+                            </div>
+
+                            <!-- Meal & Drink Supplements Card -->
+                            <div class="bg-amber-50/40 rounded-xl p-4 border border-amber-200/60 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <span class="text-[10px] uppercase font-bold tracking-wider text-amber-700">Optional Daily Supplements</span>
+                                    <h5 class="font-black text-amber-900 text-sm mt-1">Beverages, Coffees & Snacks</h5>
+                                    
+                                    <ul class="space-y-2 mt-4 text-xs border-t border-amber-200/30 pt-3 text-amber-950">
+                                        <li class="flex justify-between"><span class="text-amber-800">Standard Supplement (1 coffee or soft drink)</span><span class="font-semibold">£4.00</span></li>
+                                        <li class="flex justify-between"><span class="text-amber-800 font-semibold">Average Pint Supplement (per image_c1ddfe.png)</span><span class="font-semibold">£7.50</span></li>
+                                        <li class="flex justify-between"><span class="text-amber-800">Premium Supplement (Draft Pint + Specialty Snack)</span><span class="font-semibold">£15.00</span></li>
+                                    </ul>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-amber-200/30">
+                                    <p class="text-[10px] text-amber-700/80 leading-relaxed">Adjust your dynamic budget in the calculator below to include these drink/supplement add-ons!</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Part 3: Taxis & Ride-Hailing -->
+                <section id="taxi" class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-slate-200 scroll-mt-24">
+                    <div class="border-b border-slate-100 pb-4 mb-6">
+                        <span class="text-london-red font-bold text-xs uppercase tracking-wider">Part 3</span>
+                        <h3 class="text-2xl font-black text-slate-900 mt-1">Taxi & Ride-Hailing Dynamics</h3>
+                        <p class="text-slate-500 text-sm mt-1">How and when to use London's cabs to maximize time and money.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        
+                        <!-- Black Cab Info -->
+                        <div class="bg-slate-900 text-white rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between min-h-[300px]">
+                            <div class="absolute inset-0 bg-yellow-400 opacity-[0.03] pointer-events-none"></div>
+                            
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="bg-yellow-400 text-slate-900 text-[10px] uppercase font-black px-2.5 py-1 rounded tracking-widest shadow">LONDON TAXI</span>
+                                    <span class="text-slate-400 text-xs">Regulated</span>
+                                </div>
+                                <h4 class="text-2xl font-black mt-4">Traditional Black Cabs</h4>
+                                <p class="text-slate-400 text-xs mt-1">Iconic hackney carriages that run strictly on regulated meters.</p>
+                                
+                                <ul class="space-y-2 mt-6 text-xs text-slate-300">
+                                    <li class="flex justify-between border-b border-white/5 py-1.5">
+                                        <span>Minimum Fare (Start)</span>
+                                        <span class="font-bold text-white">£4.40</span>
+                                    </li>
+                                    <li class="flex justify-between border-b border-white/5 py-1.5">
+                                        <span>Tariff 1 (Daytime, Mon–Fri)</span>
+                                        <span class="font-bold text-white">~£4.13 / mile</span>
+                                    </li>
+                                    <li class="flex justify-between border-b border-white/5 py-1.5">
+                                        <span>Tariff 2 (Evenings & Weekends)</span>
+                                        <span class="font-bold text-white">~£4.99 / mile</span>
+                                    </li>
+                                    <li class="flex justify-between py-1.5">
+                                        <span>Heathrow Airport to Central</span>
+                                        <span class="font-bold text-white">£70.00 – £120.00</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="mt-6 pt-4 border-t border-white/10 flex items-center space-x-2 text-xs text-yellow-400 font-bold">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                <span>Allowed in London Bus Lanes (Saves substantial commute time)</span>
+                            </div>
+                        </div>
+
+                        <!-- Uber / Bolt Info -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col justify-between min-h-[300px]">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="bg-slate-200 text-slate-800 text-[10px] uppercase font-black px-2.5 py-1 rounded tracking-widest">APP RIDES</span>
+                                    <span class="text-slate-500 text-xs">GPS Tracked</span>
+                                </div>
+                                <h4 class="text-2xl font-black text-slate-900 mt-4">Uber, Bolt, Freenow</h4>
+                                <p class="text-slate-500 text-xs mt-1">Convenient app-based ride-hailing with upfront pricing.</p>
+                                
+                                <ul class="space-y-2 mt-6 text-xs text-slate-600">
+                                    <li class="flex justify-between border-b border-slate-200 py-1.5">
+                                        <span>Minimum Fare (Start)</span>
+                                        <span class="font-bold text-slate-900">~£4.30</span>
+                                    </li>
+                                    <li class="flex justify-between border-b border-slate-200 py-1.5">
+                                        <span>Heathrow Airport to Central</span>
+                                        <span class="font-bold text-slate-900">£45.00 – £55.00</span>
+                                    </li>
+                                    <li class="flex justify-between border-b border-slate-200 py-1.5">
+                                        <span>Dynamic / Surge Multipliers</span>
+                                        <span class="font-bold text-london-red">Active during rain & peak hours</span>
+                                    </li>
+                                    <li class="flex justify-between py-1.5">
+                                        <span>Card payments via App</span>
+                                        <span class="font-bold text-slate-900">Seamlessly processed</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="mt-6 pt-4 border-t border-slate-200 flex items-center space-x-2 text-xs text-slate-500">
+                                <svg class="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                                <span>No bus lane permissions. Subject to heavy city gridlock.</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- Part 4: SIM & Cellular Setup -->
+                <section id="sim" class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-slate-200 scroll-mt-24">
+                    <div class="border-b border-slate-100 pb-4 mb-6">
+                        <span class="text-london-red font-bold text-xs uppercase tracking-wider">Part 4</span>
+                        <h3 class="text-2xl font-black text-slate-900 mt-1">Mobile Network Comparison (MNO & MVNO)</h3>
+                        <p class="text-slate-500 text-sm mt-1">Detailed pricing and infrastructure options. Choose between a single budget MVNO or a fully active 4-network backup configuration.</p>
+                    </div>
+
+                    <!-- MNO Comparison -->
+                    <div class="space-y-4">
+                        <h4 class="font-black text-slate-800 text-lg flex items-center gap-2">
+                            <span>1. The "Big Four" Infrastructure Networks (MNO)</span>
+                            <span class="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-normal">Direct Access</span>
+                        </h4>
+                        
+                        <div class="overflow-x-auto border border-slate-100 rounded-xl">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-100">
+                                        <th class="p-4">Operator</th>
+                                        <th class="p-4">Starter SIM Cost</th>
+                                        <th class="p-4">Min. 30-Day PayAsYouGo Plan</th>
+                                        <th class="p-4">Data Estimate</th>
+                                        <th class="p-4">Advantage</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700">
+                                    <tr>
+                                        <td class="p-4 font-bold text-london-blue">EE</td>
+                                        <td class="p-4">£1.00</td>
+                                        <td class="p-4">£10.00</td>
+                                        <td class="p-4">~20GB Data</td>
+                                        <td class="p-4 text-slate-500">Fastest overall 5G. Continued coverage inside the subway (Tube) tunnels.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold text-red-600">Vodafone</td>
+                                        <td class="p-4">£1.00</td>
+                                        <td class="p-4">£10.00</td>
+                                        <td class="p-4">~20GB Data</td>
+                                        <td class="p-4 text-slate-500">Highly reliable national coverage for day-trips outside London.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold text-cyan-600">Three</td>
+                                        <td class="p-4">£1.00</td>
+                                        <td class="p-4">£10.00</td>
+                                        <td class="p-4">~30GB Data</td>
+                                        <td class="p-4 text-slate-500">Heaviest data bundles for low pricing packages.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold text-blue-500">O2</td>
+                                        <td class="p-4">£1.00</td>
+                                        <td class="p-4">£10.00</td>
+                                        <td class="p-4">~20GB Data</td>
+                                        <td class="p-4 text-slate-500">Enables automated entry to free high-street O2 Wi-Fi hotspots.</td>
+                                    </tr>
+                                    <tr class="bg-emerald-50/50">
+                                        <td class="p-4 font-black text-emerald-800">ALL 4 OPERATORS</td>
+                                        <td class="p-4 font-bold text-emerald-800">£4.00 <span class="text-[10px] text-slate-500 font-normal">(£1.00 x 4 SIMs)</span></td>
+                                        <td class="p-4 font-bold text-emerald-800">£40.00 <span class="text-[10px] text-slate-500 font-normal">(£10.00 x 4 plans)</span></td>
+                                        <td class="p-4 font-bold text-emerald-800">~90GB+ Combined</td>
+                                        <td class="p-4 font-bold text-emerald-800">Complete, redundant backup. Swap SIM slots to test every single tower mast in London. Totaling £44.00.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- MVNO Section -->
+                    <div class="space-y-4 mt-8">
+                        <h4 class="font-black text-slate-800 text-lg flex items-center gap-2">
+                            <span>2. Virtual Budget Networks (MVNO)</span>
+                            <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold">Highly Recommended for Tourists</span>
+                        </h4>
+                        <p class="text-xs text-slate-500 leading-relaxed max-w-2xl">
+                            MVNOs do not own physical infrastructure, but they run silently on the same towers as the Big Four. You can easily pick these up inside local grocery supermarkets (Tesco, Sainsbury's) or off-licenses for £1.00, then purchase packages online.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="border border-slate-100 rounded-xl p-4 bg-slate-50 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold text-slate-900">Smarty Mobile</span>
+                                        <span class="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-semibold">Runs on Three</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 mt-2">Arguably the best value for pure data. Highly popular 30-day contract-free rolling plans. Ideal if you use a lot of social media, streaming, and navigation.</p>
+                                </div>
+                                <span class="text-xs font-bold text-emerald-600 mt-4 block">Plans from £6.00 – £12.00 / month</span>
+                            </div>
+
+                            <div class="border border-slate-100 rounded-xl p-4 bg-slate-50 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold text-slate-900">Lebara Mobile</span>
+                                        <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">Runs on Vodafone</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 mt-2">Highly popular for international tourists. Offers cheap calling minutes back to European countries (including Serbia) bundled in plans.</p>
+                                </div>
+                                <span class="text-xs font-bold text-emerald-600 mt-4 block">Plans from £5.00 – £10.00 / month</span>
+                            </div>
+
+                            <div class="border border-slate-100 rounded-xl p-4 bg-slate-50 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold text-slate-900">Lyca Mobile</span>
+                                        <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">Runs on EE</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 mt-2">Readily available at almost all kiosk checkouts throughout London. Can buy a starter pack with preloaded cash allowances easily.</p>
+                                </div>
+                                <span class="text-xs font-bold text-emerald-600 mt-4 block">Plans from £5.00 – £10.00 / month</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Part 5: Interactive Calculator -->
+                <section id="budget" class="bg-slate-900 text-white rounded-2xl p-6 lg:p-8 shadow-xl scroll-mt-24">
+                    <div class="border-b border-white/10 pb-4 mb-6">
+                        <span class="text-yellow-400 font-bold text-xs uppercase tracking-wider">Interactive tool</span>
+                        <h3 class="text-2xl font-black text-white mt-1">London Trip Budget Estimator</h3>
+                        <p class="text-slate-400 text-sm mt-1">Customize variables to estimate your total trip expenditure (excluding flights).</p>
+                    </div>
+
+                    <!-- Layout split: settings / results -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        
+                        <!-- Inputs -->
+                        <div class="lg:col-span-7 space-y-6">
+                            
+                            <!-- Day Slider -->
+                            <div>
+                                <div class="flex justify-between text-xs text-slate-300 font-bold mb-2">
+                                    <label for="trip-days">Trip Duration</label>
+                                    <span id="days-label" class="text-yellow-400">5 Days</span>
+                                </div>
+                                <input type="range" id="trip-days" min="1" max="30" value="5" class="w-full h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-yellow-400" oninput="calculateTripCost()">
+                            </div>
+
+                            <!-- Predefined Scenario Quick Selectors -->
+                            <div>
+                                <span class="block text-xs text-slate-400 mb-2">Or load predefined report profile:</span>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button onclick="loadScenario('A')" class="px-3 py-2 rounded bg-slate-800 text-xs font-bold hover:bg-slate-700 text-yellow-400 border border-white/5 transition-all">A: Private Value</button>
+                                    <button onclick="loadScenario('B')" class="px-3 py-2 rounded bg-slate-800 text-xs font-bold hover:bg-slate-700 text-yellow-400 border border-white/5 transition-all">B: Mid-Range Comfort</button>
+                                    <button onclick="loadScenario('C')" class="px-3 py-2 rounded bg-slate-800 text-xs font-bold hover:bg-slate-700 text-yellow-400 border border-white/5 transition-all">C: Tech Collector</button>
+                                </div>
+                            </div>
+
+                            <hr class="border-white/10">
+
+                            <!-- Dropdowns -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="accommodation" class="block text-xs text-slate-300 mb-2 font-semibold">Accommodation Style</label>
+                                    <select id="accommodation" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 focus:outline-none" onchange="calculateTripCost()">
+                                        <option value="85">Value Private Room / Guesthouse (£85/night)</option>
+                                        <option value="140" selected>Mid-Range 3-Star Hotel (£140/night)</option>
+                                        <option value="300">Upscale Boutique Hotel (£300/night)</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="dining" class="block text-xs text-slate-300 mb-2 font-semibold">Dining Style (3 Meals a Day)</label>
+                                    <select id="dining" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-yellow-400 focus:outline-none" onchange="calculateTripCost()">
+                                        <option value="21">Plan A: Supermarkets & Markets (£21.00/day)</option>
+                                        <option value="60" selected>Plan B: Cafes & Classic Pubs (£60.00/day)</option>
+                                        <option value="125">Plan C: High-End Dining (£125.00/day)</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="supplement" class="block text-xs text-slate-300 mb-2 font-semibold">Daily Meal/Drink Supplement (Extras)</label>
+                                    <select id="supplement" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-yellow-400 focus:outline-none" onchange="calculateTripCost()">
+                                        <option value="0" selected>No Daily Extras (£0.00/day)</option>
+                                        <option value="4.00">Standard Supplement: Coffee / Soda (£4.00/day)</option>
+                                        <option value="7.50">Average Pint Supplement: Beer / Specialty Drink (£7.50/day)</option>
+                                        <option value="15.00">Premium Supplement: Beer + Snack (£15.00/day)</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="transit" class="block text-xs text-slate-300 mb-2 font-semibold">Transit Preference (Per Day)</label>
+                                    <select id="transit" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-yellow-400 focus:outline-none" onchange="calculateTripCost()">
+                                        <option value="5.50">Bus Only (£5.50/day)</option>
+                                        <option value="8.90" selected>Tube / Overground Zones 1-2 (£8.90/day)</option>
+                                        <option value="25.00">Frequent Uber / Taxi rides (£25.00/day)</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="sim-choice" class="block text-xs text-slate-300 mb-2 font-semibold">SIM Card Configuration</label>
+                                    <select id="sim-choice" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-yellow-400 focus:outline-none" onchange="calculateTripCost()">
+                                        <option value="10">Single Smarty / Lebara MVNO Plan (£10.00)</option>
+                                        <option value="15" selected>Single Premium MNO eSIM (£15.00)</option>
+                                        <option value="44">Four-network Setup (All SIMs + Plans) (£44.00)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cost Output Card -->
+                        <div class="lg:col-span-5 bg-slate-800 rounded-2xl p-6 border border-white/10 flex flex-col justify-between shadow-inner">
+                            <div class="space-y-4">
+                                <span class="text-xs uppercase font-extrabold text-slate-400 tracking-wider">Cost breakdown summary</span>
+                                
+                                <div class="space-y-2 text-xs text-slate-300">
+                                    <div class="flex justify-between border-b border-white/5 pb-2">
+                                        <span>Accommodation Total</span>
+                                        <span id="calc-acc-total" class="font-bold text-white">£700.00</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/5 pb-2">
+                                        <span>Dining & Main Meals Total</span>
+                                        <span id="calc-dining-total" class="font-bold text-white">£275.00</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/5 pb-2">
+                                        <span>Meal & Drink Supplements</span>
+                                        <span id="calc-supplement-total" class="font-bold text-white">£0.00</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/5 pb-2">
+                                        <span>Transportation Total</span>
+                                        <span id="calc-transit-total" class="font-bold text-white">£44.50</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/5 pb-2">
+                                        <span>Mobile Connection SIMs</span>
+                                        <span id="calc-sim-total" class="font-bold text-white">£15.00</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/5 pb-2">
+                                        <span>Visa Application Fee</span>
+                                        <span class="font-bold text-white">£135.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 pt-6 border-t border-white/10 space-y-4">
+                                <div>
+                                    <span class="text-xs text-slate-400 block">Total Est. Cost (GBP)</span>
+                                    <span id="final-gbp-total" class="text-4xl font-black text-yellow-400">£1,169.50</span>
+                                </div>
+
+                                <div>
+                                    <span class="text-xs text-slate-400 block">Total Est. Cost (Chinese Yuan / CNY)</span>
+                                    <span id="final-cny-total" class="text-2xl font-bold text-emerald-400">~10,596 CNY</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Footer block -->
+            <footer class="bg-slate-900 text-slate-400 text-xs py-8 px-6 lg:px-12 border-t border-white/5 mt-16 text-center">
+                <p>&copy; 2026 London Travel Planner. All estimates are accurate representations of current London living and visa metrics.</p>
+                <p class="mt-2 text-slate-500">Rates shown are based on realistic averages. Actual hotel and restaurant pricing will depend entirely on selected service providers.</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- Scripts for dynamic mechanics -->
+    <script>
+        // DOM Selectors
+        const menuBtn = document.getElementById('menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        // Sidebar Navigation Toggles
+        if (menuBtn && sidebar && overlay) {
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            });
+        }
+
+        // Active link tracking
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(n => {
+                    n.classList.remove('bg-white/10', 'text-white');
+                    n.classList.add('text-slate-300', 'hover:bg-white/5', 'hover:text-white');
+                });
+                item.classList.add('bg-white/10', 'text-white');
+                item.classList.remove('text-slate-300', 'hover:bg-white/5', 'hover:text-white');
+                
+                // auto close drawer on mobile selection
+                if (window.innerWidth < 1024 && sidebar && overlay) {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.add('hidden');
+                }
+            });
+        });
+
+        // Interactive Preparation Checklist Progress Update
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('#visa input[type="checkbox"]');
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const percent = Math.round((checked / checkboxes.length) * 100);
+
+            document.getElementById('progress-percent').innerText = `${percent}%`;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+        }
+
+        // Interactive Dynamic Trip Calculator Calculation Logic
+        const FX_RATE = 9.06; // 1 GBP ≈ 9.06 CNY
+
+        function calculateTripCost() {
+            const days = parseInt(document.getElementById('trip-days').value);
+            const accommodationRate = parseFloat(document.getElementById('accommodation').value);
+            const diningRate = parseFloat(document.getElementById('dining').value);
+            const supplementRate = parseFloat(document.getElementById('supplement').value);
+            const transitRate = parseFloat(document.getElementById('transit').value);
+            const simCost = parseFloat(document.getElementById('sim-choice').value);
+            const visaFee = 135.00; // Fixed mandatory visa fee for Serbian citizens
+
+            // Element labels
+            document.getElementById('days-label').innerText = `${days} Days`;
+
+            // Segmented totals
+            const accTotal = accommodationRate * days;
+            const diningTotal = diningRate * days;
+            const supplementTotal = supplementRate * days;
+            const transitTotal = transitRate * days;
+
+            // Update UI elements
+            document.getElementById('calc-acc-total').innerText = `£${accTotal.toFixed(2)}`;
+            document.getElementById('calc-dining-total').innerText = `£${diningTotal.toFixed(2)}`;
+            document.getElementById('calc-supplement-total').innerText = `£${supplementTotal.toFixed(2)}`;
+            document.getElementById('calc-transit-total').innerText = `£${transitTotal.toFixed(2)}`;
+            document.getElementById('calc-sim-total').innerText = `£${simCost.toFixed(2)}`;
+
+            // Calculate total sum
+            const totalGbp = accTotal + diningTotal + supplementTotal + transitTotal + simCost + visaFee;
+            const totalCny = totalGbp * FX_RATE;
+
+            // Set final output text labels
+            document.getElementById('final-gbp-total').innerText = `£${totalGbp.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('final-cny-total').innerText = `¥${Math.round(totalCny).toLocaleString('zh-CN')} CNY`;
+        }
+
+        // Preload Preset Scenarios (Scenario A, B, C)
+        function loadScenario(type) {
+            const tripDaysInput = document.getElementById('trip-days');
+            const accSelect = document.getElementById('accommodation');
+            const diningSelect = document.getElementById('dining');
+            const supplementSelect = document.getElementById('supplement');
+            const transitSelect = document.getElementById('transit');
+            const simSelect = document.getElementById('sim-choice');
+
+            if (type === 'A') {
+                // Value Private Room / Guesthouse Budget: 5 days, basic private room, low food, no supplement, tube cap, MVNO sim
+                tripDaysInput.value = 5;
+                accSelect.value = "85"; // Guesthouse
+                diningSelect.value = "21"; // Plan A (£21.00/day)
+                supplementSelect.value = "0"; // No extras
+                transitSelect.value = "8.90"; // Tube Daily Cap
+                simSelect.value = "10"; // MVNO Plan (£10.00)
+            } else if (type === 'B') {
+                // Mid-range Comfort: 5 days, mid-range hotel, standard dining, pint supplement, tube cap, eSIM
+                tripDaysInput.value = 5;
+                accSelect.value = "140"; // Mid-Range Hotel
+                diningSelect.value = "60"; // Plan B (£60.00/day)
+                supplementSelect.value = "7.50"; // Pint supplement
+                transitSelect.value = "8.90"; // Tube Daily Cap
+                simSelect.value = "15"; // Premium eSIM (£15.00)
+            } else if (type === 'C') {
+                // Tech Collector (Comfort): 5 days, upscale hotel, premium food, premium supplement, taxi transit, 4 MNO SIM bundle
+                tripDaysInput.value = 5;
+                accSelect.value = "300"; // Upscale
+                diningSelect.value = "125"; // Plan C (£125.00/day)
+                supplementSelect.value = "15.00"; // Premium supplement
+                transitSelect.value = "25.00"; // Taxi-heavy
+                simSelect.value = "44"; // All four networks SIMs + plans (£44.00)
+            }
+
+            // Fire evaluation cycle to update totals automatically
+            calculateTripCost();
+        }
+
+        // Initialize Calculation on window load
+        window.onload = function() {
+            calculateTripCost();
+        }
+    </script>
+</body>
+</html>
