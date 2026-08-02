@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="sr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global RAM Market Analysis 2024–2028</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: '#0f172a',
+                        darker: '#0b1120',
+                        accent: {
+                            blue: '#3b82f6',
+                            cyan: '#06b6d4',
+                            teal: '#14b8a6',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        body {
+            background-color: #0b1120;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(circle at 50% -20%, #1e3a8a, #0b1120 50%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism utility classes */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .glass-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 10px 20px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 15px 30px rgba(0, 0, 0, 0.6);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+
+        /* Scroll Animations */
+        .reveal-section {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .reveal-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 50vh;
+            min-height: 400px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569; 
+        }
+
+        /* Scroll Progress Bar */
+        #progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #06b6d4, #14b8a6);
+            width: 0%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 50;
+            transition: width 0.1s ease-out;
+        }
+
+        /* Gauge custom styles */
+        .circular-chart {
+            display: block;
+            margin: 0 auto;
+            max-width: 80%;
+            max-height: 250px;
+        }
+        .circle-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 3.8;
+        }
+        .circle {
+            fill: none;
+            stroke-width: 2.8;
+            stroke-linecap: round;
+        }
+        .circle.animate {
+            animation: progress 1.5s ease-out forwards;
+        }
+        @keyframes progress {
+            0% { stroke-dasharray: 0 100; }
+        }
+        .percentage {
+            fill: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.5em;
+            text-anchor: middle;
+            font-weight: bold;
+        }
+
+        /* Title Background */
+        .title-bg {
+            background-image: 
+                linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.4)),
+                url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2034&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: overlay;
+        }
+
+        /* Heatmap Grid */
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: auto repeat(12, 1fr);
+            gap: 2px;
+            background: var(--glass-bg);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            width: 100%;
+        }
+        .heatmap-cell {
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            border-radius: 2px;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .heatmap-label {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        /* Tooltip for Heatmap */
+        .heatmap-cell .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: rgba(15, 23, 42, 0.9);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 20;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            border: 1px solid var(--glass-border);
+        }
+        .heatmap-cell:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .scroll-down-indicator {
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="relative w-full">
+
+    <div id="progress-bar"></div>
+
+    <header class="fixed top-0 left-0 w-full z-40 glass px-6 py-4 flex justify-between items-center bg-opacity-80 transition-all duration-300" id="main-header">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
+                R
+            </div>
+            <h1 class="text-xl font-bold tracking-tight text-white hidden sm:block">RAM<span class="text-accent-cyan">Core</span> Dynamics</h1>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <a href="#slide-1" class="text-sm font-medium text-slate-300 hover:text-white transition px-3 py-1 hidden md:block">
+                Start Report
+            </a>
+            <div class="w-px h-6 bg-slate-700 mx-1 self-center hidden md:block"></div>
+            <button id="btn-fullscreen" class="p-2 rounded-full hover:bg-slate-700 transition text-slate-300 hover:text-white" title="Toggle Fullscreen">
+                <i class="fas fa-expand"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="relative w-full flex flex-col gap-6 pb-12">
+
+        <!-- Slide 0: Title Slide -->
+        <section class="min-h-screen flex flex-col justify-center relative title-bg" id="slide-0">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-[#0b1120]"></div>
+            <div class="relative z-10 text-center px-4">
+                <div class="glass p-10 rounded-2xl max-w-3xl mx-auto border-t border-l border-white/20 shadow-2xl reveal-section is-visible">
+                    <div class="inline-block px-4 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 font-semibold text-sm mb-6 uppercase tracking-widest backdrop-blur-md">
+                        Executive Dashboard
+                    </div>
+                    <h1 class="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-teal-400 mb-4 leading-tight">
+                        Global RAM Market Analysis
+                    </h1>
+                    <h2 class="text-2xl md:text-3xl text-slate-200 font-light mb-8">2024–2028</h2>
+                    <p class="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
+                        Strategic Import & Pricing Forecast for Enterprise and Data Center Memory Solutions.
+                    </p>
+                </div>
+            </div>
+            
+            <a href="#slide-1" class="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-slate-400 hover:text-cyan-400 transition scroll-down-indicator z-20 flex flex-col items-center">
+                <span class="text-sm uppercase tracking-widest mb-2 font-medium">Scroll to explore</span>
+                <i class="fas fa-chevron-down text-2xl"></i>
+            </a>
+        </section>
+
+        <!-- Slide 1: Pregled tržišta (KPIs) -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-1">
+            <div class="w-full max-w-7xl mx-auto">
+                <div class="w-full mb-8 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Market Overview & KPIs</h2>
+                    <p class="text-base text-slate-400">Key Performance Indicators for FY 2024-2025 (Fictional Data)</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+                    <div class="glass-card p-6 rounded-2xl relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 text-slate-700/30 text-8xl group-hover:scale-110 transition-transform duration-500"><i class="fas fa-chart-line"></i></div>
+                        <h3 class="text-slate-400 font-medium mb-2 text-base">Total Revenue</h3>
+                        <div class="text-4xl font-bold text-white mb-2">€342.5M</div>
+                        <div class="flex items-center text-teal-400 font-medium text-sm">
+                            <i class="fas fa-arrow-up mr-1"></i> +14.2% YoY
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card p-6 rounded-2xl relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 text-slate-700/30 text-8xl group-hover:scale-110 transition-transform duration-500"><i class="fas fa-microchip"></i></div>
+                        <h3 class="text-slate-400 font-medium mb-2 text-base">Modules Imported</h3>
+                        <div class="text-4xl font-bold text-white mb-2">1.28M</div>
+                        <div class="flex items-center text-teal-400 font-medium text-sm">
+                            <i class="fas fa-arrow-up mr-1"></i> +8.5% YoY
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 text-slate-700/30 text-8xl group-hover:scale-110 transition-transform duration-500"><i class="fas fa-tags"></i></div>
+                        <h3 class="text-slate-400 font-medium mb-2 text-base">Avg. Purchase Price</h3>
+                        <div class="text-4xl font-bold text-white mb-2">€48.20</div>
+                        <div class="flex items-center text-red-400 font-medium text-sm">
+                            <i class="fas fa-arrow-down mr-1"></i> -2.1% YoY
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 text-slate-700/30 text-8xl group-hover:scale-110 transition-transform duration-500"><i class="fas fa-percentage"></i></div>
+                        <h3 class="text-slate-400 font-medium mb-2 text-base">Profit Margin</h3>
+                        <div class="text-4xl font-bold text-white mb-2">22.4%</div>
+                        <div class="flex items-center text-teal-400 font-medium text-sm">
+                            <i class="fas fa-arrow-up mr-1"></i> +1.8 pts
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl relative overflow-hidden group lg:col-span-2 flex flex-col justify-center">
+                        <div class="absolute -right-4 -top-4 text-slate-700/30 text-8xl group-hover:scale-110 transition-transform duration-500"><i class="fas fa-globe"></i></div>
+                        <h3 class="text-slate-400 font-medium mb-2 text-base">Annual Growth Rate (CAGR)</h3>
+                        <div class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 mb-2">18.6%</div>
+                        <p class="text-slate-400 mt-2 max-w-lg text-sm">Projected sustainable growth trajectory driven by enterprise modernization and robust AI-centric data center expansion programs globally.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 2: Kretanje cena RAM memorije -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-2">
+            <div class="w-full max-w-7xl mx-auto flex flex-col h-full">
+                <div class="w-full mb-6 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">RAM Pricing Trends (2024-2025)</h2>
+                    <p class="text-base text-slate-400">Historical market fluctuations for key memory types</p>
+                </div>
+                <div class="glass p-6 rounded-2xl w-full flex-grow flex flex-col justify-center">
+                    <div class="chart-container">
+                        <canvas id="chart-price-trends"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Udeo prodaje -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-3">
+            <div class="w-full max-w-7xl mx-auto flex flex-col h-full">
+                <div class="w-full mb-6 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Sales Distribution by Category</h2>
+                    <p class="text-base text-slate-400">Current market share of imported memory modules</p>
+                </div>
+                <div class="glass p-6 rounded-2xl w-full flex-grow flex flex-col justify-center items-center">
+                    <div class="chart-container" style="height: 50vh; min-height: 400px; max-width: 800px;">
+                        <canvas id="chart-sales-share"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Kretanje prometa -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-4">
+            <div class="w-full max-w-7xl mx-auto flex flex-col h-full">
+                <div class="w-full mb-6 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Monthly Revenue (2024-2025)</h2>
+                    <p class="text-base text-slate-400">Import revenue tracking in Millions (€)</p>
+                </div>
+                <div class="glass p-6 rounded-2xl w-full flex-grow flex flex-col justify-center">
+                    <div class="chart-container">
+                        <canvas id="chart-revenue"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 5: Globalni uticaji -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-5">
+            <div class="w-full max-w-7xl mx-auto flex flex-col h-full">
+                <div class="w-full mb-6 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Global Pricing Influences</h2>
+                    <p class="text-base text-slate-400">Relative impact of various factors on memory pricing (Scale 1-10)</p>
+                </div>
+                <div class="glass p-6 rounded-2xl w-full flex-grow flex flex-col justify-center items-center">
+                    <div class="chart-container" style="height: 50vh; min-height: 400px; max-width: 800px;">
+                        <canvas id="chart-influences"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 6: Planirani rast cena -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-6">
+            <div class="w-full max-w-7xl mx-auto flex flex-col h-full">
+                <div class="w-full mb-6 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Price Forecast (2026-2027)</h2>
+                    <p class="text-base text-slate-400">Projected average price per module (€)</p>
+                </div>
+                <div class="glass p-6 rounded-2xl w-full flex-grow flex flex-col justify-center">
+                    <div class="chart-container">
+                        <canvas id="chart-price-forecast"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 7: Prognoza prometa -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-7">
+            <div class="w-full max-w-7xl mx-auto flex flex-col h-full">
+                <div class="w-full mb-6 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Revenue Forecast by Segment</h2>
+                    <p class="text-base text-slate-400">Quarterly projections for 2026-2027 (in Millions €)</p>
+                </div>
+                <div class="glass p-6 rounded-2xl w-full flex-grow flex flex-col justify-center">
+                    <div class="chart-container">
+                        <canvas id="chart-revenue-forecast"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 8: Poređenje proizvođača -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-8">
+            <div class="w-full max-w-7xl mx-auto flex flex-col h-full">
+                <div class="w-full mb-6 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Supplier Market Share</h2>
+                    <p class="text-base text-slate-400">Volume breakdown by primary manufacturers (%)</p>
+                </div>
+                <div class="glass p-6 rounded-2xl w-full flex-grow flex flex-col justify-center">
+                    <div class="chart-container">
+                        <canvas id="chart-manufacturers"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 9: Heatmap -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-9">
+            <div class="w-full max-w-7xl mx-auto flex flex-col h-full">
+                <div class="w-full mb-6 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Regional Pricing Heatmap</h2>
+                    <p class="text-base text-slate-400">Average memory price index by region across the year</p>
+                </div>
+                
+                <div class="w-full glass p-6 rounded-2xl overflow-x-auto flex flex-col justify-center flex-grow">
+                    <div class="min-w-[800px] w-full max-w-5xl mx-auto">
+                        <!-- Legend -->
+                        <div class="flex justify-end items-center mb-4 gap-3 text-sm text-slate-300">
+                            <span>Lower Price</span>
+                            <div class="w-48 h-4 rounded bg-gradient-to-r from-blue-900 via-teal-600 to-red-500 shadow-inner"></div>
+                            <span>Higher Price</span>
+                        </div>
+                        
+                        <div class="heatmap-grid" id="heatmap-container">
+                            <!-- Headers -->
+                            <div class="heatmap-label"></div>
+                            <div class="heatmap-label">Jan</div>
+                            <div class="heatmap-label">Feb</div>
+                            <div class="heatmap-label">Mar</div>
+                            <div class="heatmap-label">Apr</div>
+                            <div class="heatmap-label">May</div>
+                            <div class="heatmap-label">Jun</div>
+                            <div class="heatmap-label">Jul</div>
+                            <div class="heatmap-label">Aug</div>
+                            <div class="heatmap-label">Sep</div>
+                            <div class="heatmap-label">Oct</div>
+                            <div class="heatmap-label">Nov</div>
+                            <div class="heatmap-label">Dec</div>
+                            <!-- Rows generated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 10: Bubble Chart -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-10">
+            <div class="w-full max-w-7xl mx-auto flex flex-col h-full">
+                <div class="w-full mb-6 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Brand Performance Matrix</h2>
+                    <p class="text-base text-slate-400">X: Avg Price, Y: Demand Volume, Bubble Size: Profit Margin</p>
+                </div>
+                <div class="glass p-6 rounded-2xl w-full flex-grow flex flex-col justify-center">
+                    <div class="chart-container">
+                        <canvas id="chart-bubble"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 11: Donut Chart -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-11">
+            <div class="w-full max-w-7xl mx-auto flex flex-col h-full">
+                <div class="w-full mb-6 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Revenue Structure Breakdown</h2>
+                    <p class="text-base text-slate-400">Diversification of income streams</p>
+                </div>
+                <div class="glass p-6 rounded-2xl w-full flex-grow flex flex-col justify-center items-center">
+                    <div class="chart-container" style="height: 50vh; min-height: 400px; max-width: 800px;">
+                        <canvas id="chart-donut"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 12: Kombinovani grafikon -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-12">
+            <div class="w-full max-w-7xl mx-auto flex flex-col h-full">
+                <div class="w-full mb-6 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Volume vs. Average Price Index</h2>
+                    <p class="text-base text-slate-400">Correlation between import volume and market prices</p>
+                </div>
+                <div class="glass p-6 rounded-2xl w-full flex-grow flex flex-col justify-center">
+                    <div class="chart-container">
+                        <canvas id="chart-combined"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 13: Forecast Dashboard -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-13">
+            <div class="w-full max-w-7xl mx-auto flex flex-col h-full justify-center">
+                <div class="w-full mb-8 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Growth Projections (Next 24 Months)</h2>
+                    <p class="text-base text-slate-400">Expected strategic metric improvements</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+                    <div class="glass-card p-6 rounded-2xl flex flex-col items-center">
+                        <h3 class="text-slate-300 font-medium mb-4 text-base text-center">Expected Price Growth</h3>
+                        <svg viewBox="0 0 36 36" class="circular-chart text-blue-500">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle gauge-path" stroke="currentColor" stroke-dasharray="12, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <text x="18" y="20.35" class="percentage">+12%</text>
+                        </svg>
+                        <p class="text-xs text-slate-500 mt-4 text-center">Driven by DDR5 transition</p>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl flex flex-col items-center">
+                        <h3 class="text-slate-300 font-medium mb-4 text-base text-center">Demand Growth</h3>
+                        <svg viewBox="0 0 36 36" class="circular-chart text-cyan-400">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle gauge-path" stroke="currentColor" stroke-dasharray="45, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <text x="18" y="20.35" class="percentage">+45%</text>
+                        </svg>
+                        <p class="text-xs text-slate-500 mt-4 text-center">Mainly AI Data Centers</p>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl flex flex-col items-center">
+                        <h3 class="text-slate-300 font-medium mb-4 text-base text-center">Profit Expansion</h3>
+                        <svg viewBox="0 0 36 36" class="circular-chart text-teal-400">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle gauge-path" stroke="currentColor" stroke-dasharray="8, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <text x="18" y="20.35" class="percentage">+8%</text>
+                        </svg>
+                        <p class="text-xs text-slate-500 mt-4 text-center">Optimization of logistics</p>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl flex flex-col items-center">
+                        <h3 class="text-slate-300 font-medium mb-4 text-base text-center">Total Market Shift</h3>
+                        <svg viewBox="0 0 36 36" class="circular-chart text-purple-400">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle gauge-path" stroke="currentColor" stroke-dasharray="28, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <text x="18" y="20.35" class="percentage">+28%</text>
+                        </svg>
+                        <p class="text-xs text-slate-500 mt-4 text-center">Global sector growth</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 14: Zaključak -->
+        <section class="flex flex-col justify-center py-12 md:py-16 px-6 md:px-12 reveal-section" id="slide-14">
+            <div class="w-full max-w-7xl mx-auto flex flex-col h-full justify-center">
+                <div class="w-full mb-8 text-center sm:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Strategic Conclusions</h2>
+                    <p class="text-base text-slate-400">Key takeaways for FY 2026-2027 planning</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                    
+                    <div class="glass-card p-6 rounded-2xl border-l-4 border-l-blue-500 flex items-start gap-4">
+                        <div class="bg-blue-500/20 p-3 rounded-full text-blue-400 shrink-0">
+                            <i class="fas fa-microchip text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white mb-1">AI Market Driver</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed">Growth of the AI market significantly increases the demand for high-speed DDR5 and HBM memory modules across global infrastructures.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl border-l-4 border-l-slate-400 flex items-start gap-4">
+                        <div class="bg-slate-500/20 p-3 rounded-full text-slate-300 shrink-0">
+                            <i class="fas fa-balance-scale text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white mb-1">DDR4 Stabilization</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed">Prices for legacy DDR4 are expected to stabilize, serving primarily budget tiers and older enterprise infrastructure replacements.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl border-l-4 border-l-teal-500 flex items-start gap-4">
+                        <div class="bg-teal-500/20 p-3 rounded-full text-teal-400 shrink-0">
+                            <i class="fas fa-building text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white mb-1">Enterprise Dominance</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed">The Enterprise segment will achieve the highest volume growth as companies globally refresh aging post-pandemic hardware.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl border-l-4 border-l-cyan-500 flex items-start gap-4">
+                        <div class="bg-cyan-500/20 p-3 rounded-full text-cyan-400 shrink-0">
+                            <i class="fas fa-server text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white mb-1">Data Center Core</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed">Data centers remain the primary driver of demand, especially targeting high-density server configurations with advanced ECC support.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl border-l-4 border-l-purple-500 flex items-start gap-4 md:col-span-2">
+                        <div class="bg-purple-500/20 p-3 rounded-full text-purple-400 shrink-0">
+                            <i class="fas fa-chart-line text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white mb-1">Total Revenue Forecast</h3>
+                            <p class="text-slate-300 leading-relaxed text-base">Projected growth of total import revenue is approximately <span class="text-purple-400 font-bold">28%</span> over the next two years, contingent on global supply chain stability and silicon availability.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <footer class="w-full mt-16 text-center text-slate-500 text-sm">
+                &copy; 2026 RAMCore Dynamics. All rights reserved. End of report.
+            </footer>
+        </section>
+
+    </main>
+
+    <script>
+        // Common Chart.js Settings for Dark Theme
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+        
+        const tooltipConfig = {
+            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+            titleColor: '#fff',
+            bodyColor: '#e2e8f0',
+            borderColor: 'rgba(56, 189, 248, 0.4)',
+            borderWidth: 1,
+            padding: 16,
+            cornerRadius: 8,
+            displayColors: true,
+            boxPadding: 6
+        };
+
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#e2e8f0', padding: 20, font: { size: 13 } } },
+                tooltip: tooltipConfig
+            },
+            animation: { duration: 2000, easing: 'easeOutQuart' }
+        };
+
+        const months24 = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const months2Years = [...months24.map(m => m+' 24'), ...months24.map(m => m+' 25')];
+        const quartersForecast = ['Q1 26', 'Q2 26', 'Q3 26', 'Q4 26', 'Q1 27', 'Q2 27', 'Q3 27', 'Q4 27'];
+
+        // Store chart instances
+        const charts = {};
+
+        // Chart Initialization Functions
+        function initChart2() {
+            if(charts.chart2) return; 
+            const ctx = document.getElementById('chart-price-trends').getContext('2d');
+            const ddr4 = months2Years.map((_, i) => 35 - (i * 0.3) + (Math.random() * 2 - 1));
+            const ddr5 = months2Years.map((_, i) => 120 - (i * 1.5) + (Math.random() * 5 - 2.5));
+            const ecc = months2Years.map((_, i) => 180 + (i * 0.5) + (Math.random() * 8 - 4));
+
+            charts.chart2 = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months2Years,
+                    datasets: [
+                        { label: 'DDR4', data: ddr4, borderColor: '#94a3b8', backgroundColor: 'rgba(148, 163, 184, 0.1)', tension: 0.4, borderWidth: 3 },
+                        { label: 'DDR5', data: ddr5, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', tension: 0.4, borderWidth: 3 },
+                        { label: 'Server ECC', data: ecc, borderColor: '#14b8a6', backgroundColor: 'rgba(20, 184, 166, 0.1)', tension: 0.4, borderWidth: 3 }
+                    ]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: { y: { title: { display: true, text: 'Price (€)' }, beginAtZero: true } }
+                }
+            });
+        }
+
+        function initChart3() {
+            if(charts.chart3) return;
+            const ctx = document.getElementById('chart-sales-share').getContext('2d');
+            charts.chart3 = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['DDR4', 'DDR5', 'Laptop SO-DIMM', 'ECC Server', 'Industrial RAM'],
+                    datasets: [{
+                        data: [25, 35, 15, 20, 5],
+                        backgroundColor: ['#64748b', '#3b82f6', '#06b6d4', '#14b8a6', '#8b5cf6'],
+                        borderWidth: 2,
+                        borderColor: '#0f172a'
+                    }]
+                },
+                options: { ...commonOptions }
+            });
+        }
+
+        function initChart4() {
+            if(charts.chart4) return;
+            const ctx = document.getElementById('chart-revenue').getContext('2d');
+            const revData = months2Years.map((_, i) => 10 + (i * 0.2) + (Math.random() * 3));
+            
+            charts.chart4 = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: months2Years,
+                    datasets: [{
+                        label: 'Monthly Revenue (€ Millions)',
+                        data: revData,
+                        backgroundColor: 'rgba(6, 182, 212, 0.7)',
+                        borderColor: '#06b6d4',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: { y: { title: { display: true, text: 'Revenue (M €)' } } }
+                }
+            });
+        }
+
+        function initChart5() {
+            if(charts.chart5) return;
+            const ctx = document.getElementById('chart-influences').getContext('2d');
+            charts.chart5 = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['AI Demand', 'Samsung Prod.', 'SK Hynix Prod.', 'Micron Prod.', 'Silicon Prices', 'Transport Costs', 'Geopolitics'],
+                    datasets: [{
+                        label: 'Impact Factor (2024)',
+                        data: [9, 8, 7, 6, 5, 4, 7],
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: '#3b82f6',
+                        pointBackgroundColor: '#3b82f6',
+                        borderWidth: 2
+                    }, {
+                        label: 'Impact Factor (2025 Est.)',
+                        data: [10, 7, 8, 7, 6, 5, 8],
+                        backgroundColor: 'rgba(20, 184, 166, 0.2)',
+                        borderColor: '#14b8a6',
+                        pointBackgroundColor: '#14b8a6',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        r: { 
+                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            pointLabels: { color: '#e2e8f0', font: {size: 13} },
+                            ticks: { display: false, min: 0, max: 10 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initChart6() {
+            if(charts.chart6) return;
+            const ctx = document.getElementById('chart-price-forecast').getContext('2d');
+            const monthsNext2 = [...months24.map(m => m+' 26'), ...months24.map(m => m+' 27')];
+            
+            charts.chart6 = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: monthsNext2,
+                    datasets: [
+                        { label: 'DDR4 Forecast', data: monthsNext2.map((_, i) => 25 - (i * 0.1) + Math.random()), borderColor: '#94a3b8', backgroundColor: 'rgba(148, 163, 184, 0.2)', fill: true, tension: 0.4 },
+                        { label: 'DDR5 Forecast', data: monthsNext2.map((_, i) => 85 + (i * 1.2) + Math.random()*2), borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.2)', fill: true, tension: 0.4 },
+                        { label: 'ECC Forecast', data: monthsNext2.map((_, i) => 200 + (i * 2.5) + Math.random()*4), borderColor: '#14b8a6', backgroundColor: 'rgba(20, 184, 166, 0.2)', fill: true, tension: 0.4 }
+                    ]
+                },
+                options: { ...commonOptions, scales: { y: { title: { display: true, text: 'Projected Price (€)' } } } }
+            });
+        }
+
+        function initChart7() {
+            if(charts.chart7) return;
+            const ctx = document.getElementById('chart-revenue-forecast').getContext('2d');
+            charts.chart7 = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: quartersForecast,
+                    datasets: [
+                        { label: 'Retail', data: [12, 13, 12, 15, 13, 14, 13, 16], backgroundColor: '#64748b' },
+                        { label: 'Enterprise', data: [25, 27, 28, 30, 32, 35, 36, 40], backgroundColor: '#3b82f6' },
+                        { label: 'Data Centers', data: [35, 40, 45, 52, 60, 68, 75, 85], backgroundColor: '#14b8a6' },
+                        { label: 'OEM Partners', data: [15, 16, 17, 18, 20, 21, 23, 25], backgroundColor: '#8b5cf6' }
+                    ]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, title: { display: true, text: 'Revenue (M €)' } }
+                    }
+                }
+            });
+        }
+
+        function initChart8() {
+            if(charts.chart8) return;
+            const ctx = document.getElementById('chart-manufacturers').getContext('2d');
+            charts.chart8 = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Samsung', 'SK Hynix', 'Micron', 'Kingston', 'Corsair', 'ADATA', 'Crucial'],
+                    datasets: [{
+                        label: 'Market Share (%)',
+                        data: [38, 27, 18, 7, 4, 3, 3],
+                        backgroundColor: ['#3b82f6', '#06b6d4', '#14b8a6', '#6366f1', '#8b5cf6', '#d946ef', '#ec4899'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    indexAxis: 'y',
+                    scales: { x: { max: 50, title: { display: true, text: 'Percentage (%)' } } }
+                }
+            });
+        }
+
+        function initHeatmap() {
+            const container = document.getElementById('heatmap-container');
+            if(container.children.length > 13) return; // Already initialized
+
+            const regions = ['Europe', 'Asia', 'N. America', 'S. America', 'Middle East'];
+            
+            regions.forEach((region, rIdx) => {
+                // Row header
+                const label = document.createElement('div');
+                label.className = 'heatmap-label text-left justify-start pl-2';
+                label.textContent = region;
+                // Add delay for stagger effect
+                label.style.animation = `fadeRight 0.5s ease-out ${rIdx * 0.1}s both`;
+                container.appendChild(label);
+
+                // Generate cells for 12 months
+                for(let m=0; m<12; m++) {
+                    const cell = document.createElement('div');
+                    
+                    let basePrice = 50;
+                    if(region === 'Asia') basePrice = 45;
+                    if(region === 'N. America') basePrice = 55;
+                    if(region === 'S. America' || region === 'Middle East') basePrice = 65;
+                    
+                    const price = Math.round(basePrice + (Math.sin(m/2) * 5) + (Math.random()*10 - 5));
+                    const normalized = Math.max(0, Math.min(1, (price - 40) / 40));
+                    
+                    let r, g, b;
+                    if (normalized < 0.5) {
+                        r = 15; g = 23 + (160 * (normalized*2)); b = 42 + (120 * (normalized*2));
+                    } else {
+                        const n2 = (normalized - 0.5) * 2;
+                        r = 15 + (220 * n2); g = 183 - (140 * n2); b = 162 - (130 * n2);
+                    }
+
+                    cell.className = 'heatmap-cell opacity-0';
+                    cell.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+                    cell.style.color = normalized > 0.6 || normalized < 0.2 ? 'white' : 'black';
+                    cell.textContent = `€${price}`;
+                    
+                    // Cascade fade in animation
+                    setTimeout(() => {
+                        cell.style.transition = 'opacity 0.5s ease-in, transform 0.2s';
+                        cell.classList.remove('opacity-0');
+                    }, 500 + (rIdx * 100) + (m * 50));
+                    
+                    // Tooltip
+                    const tooltip = document.createElement('span');
+                    tooltip.className = 'tooltiptext';
+                    tooltip.textContent = `${region} - ${months24[m]}: €${price}`;
+                    cell.appendChild(tooltip);
+
+                    container.appendChild(cell);
+                }
+            });
+        }
+
+        function initChart10() {
+            if(charts.chart10) return;
+            const ctx = document.getElementById('chart-bubble').getContext('2d');
+            charts.chart10 = new Chart(ctx, {
+                type: 'bubble',
+                data: {
+                    datasets: [
+                        { label: 'Samsung', data: [{ x: 58, y: 1250, r: 40 }], backgroundColor: 'rgba(59, 130, 246, 0.6)', borderColor: '#3b82f6', borderWidth: 2, hoverBorderWidth: 4, hoverBackgroundColor: 'rgba(59, 130, 246, 0.8)' },
+                        { label: 'SK Hynix', data: [{ x: 48, y: 950, r: 32 }], backgroundColor: 'rgba(6, 182, 212, 0.6)', borderColor: '#06b6d4', borderWidth: 2, hoverBorderWidth: 4, hoverBackgroundColor: 'rgba(6, 182, 212, 0.8)' },
+                        { label: 'Micron', data: [{ x: 45, y: 650, r: 24 }], backgroundColor: 'rgba(20, 184, 166, 0.6)', borderColor: '#14b8a6', borderWidth: 2, hoverBorderWidth: 4, hoverBackgroundColor: 'rgba(20, 184, 166, 0.8)' },
+                        { label: 'Kingston', data: [{ x: 38, y: 350, r: 16 }], backgroundColor: 'rgba(99, 102, 241, 0.6)', borderColor: '#6366f1', borderWidth: 2, hoverBorderWidth: 4, hoverBackgroundColor: 'rgba(99, 102, 241, 0.8)' },
+                        { label: 'Corsair', data: [{ x: 68, y: 250, r: 20 }], backgroundColor: 'rgba(139, 92, 246, 0.6)', borderColor: '#8b5cf6', borderWidth: 2, hoverBorderWidth: 4, hoverBackgroundColor: 'rgba(139, 92, 246, 0.8)' }
+                    ]
+                },
+                options: {
+                    ...commonOptions,
+                    layout: {
+                        padding: {
+                            top: 30, // Extra padding so top bubbles aren't cut off
+                            right: 30
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Avg Price (€)' }, min: 30, max: 75 },
+                        y: { title: { display: true, text: 'Demand Volume (k Units)' }, min: 0, max: 1500 } // Increased max Y to fit Samsung comfortably
+                    }
+                }
+            });
+        }
+
+        function initChart11() {
+            if(charts.chart11) return;
+            const ctx = document.getElementById('chart-donut').getContext('2d');
+            charts.chart11 = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['RAM Sales', 'Enterprise Contracts', 'OEM', 'Service & Support', 'Other'],
+                    datasets: [{
+                        data: [65, 18, 10, 5, 2],
+                        backgroundColor: ['#3b82f6', '#14b8a6', '#8b5cf6', '#f59e0b', '#64748b'],
+                        borderWidth: 0,
+                        hoverOffset: 15
+                    }]
+                },
+                options: { ...commonOptions, cutout: '75%' }
+            });
+        }
+
+        function initChart12() {
+            if(charts.chart12) return;
+            const ctx = document.getElementById('chart-combined').getContext('2d');
+            
+            const volumeData = months24.map(() => 80 + Math.random() * 40);
+            const priceData = months24.map((_, i) => 45 + (i*0.5) - Math.random()*2);
+
+            charts.chart12 = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: months24.map(m => m + ' 25'),
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Avg Price (€)',
+                            data: priceData,
+                            borderColor: '#06b6d4',
+                            backgroundColor: '#06b6d4',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            yAxisID: 'y1',
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Monthly Volume (k Units)',
+                            data: volumeData,
+                            backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                            borderRadius: 6,
+                            yAxisID: 'y',
+                        }
+                    ]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        y: { type: 'linear', display: true, position: 'left', title: {display:true, text:'Volume'} },
+                        y1: { type: 'linear', display: true, position: 'right', grid: {drawOnChartArea: false}, title: {display:true, text:'Price (€)'} }
+                    }
+                }
+            });
+        }
+
+        function animateGauges() {
+            const circles = document.querySelectorAll('.gauge-path');
+            circles.forEach(circle => {
+                if(!circle.classList.contains('animate')) {
+                    circle.classList.add('animate');
+                }
+            });
+        }
+
+        
+        // Scroll Progress Bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progress-bar').style.width = scrolled + '%';
+            
+            // Header transparency on scroll
+            const header = document.getElementById('main-header');
+            if (winScroll > 50) {
+                header.classList.add('backdrop-blur-md', 'border-b', 'border-white/10');
+            } else {
+                header.classList.remove('backdrop-blur-md', 'border-b', 'border-white/10');
+            }
+        });
+
+        // Intersection Observer for revealing sections and triggering charts
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.2 // Trigger when 20% of section is visible
+        };
+
+        const sectionObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    
+                    // Trigger specific initialization based on section ID
+                    const id = entry.target.id;
+                    if (id === 'slide-2') initChart2();
+                    if (id === 'slide-3') initChart3();
+                    if (id === 'slide-4') initChart4();
+                    if (id === 'slide-5') initChart5();
+                    if (id === 'slide-6') initChart6();
+                    if (id === 'slide-7') initChart7();
+                    if (id === 'slide-8') initChart8();
+                    if (id === 'slide-9') initHeatmap();
+                    if (id === 'slide-10') initChart10();
+                    if (id === 'slide-11') initChart11();
+                    if (id === 'slide-12') initChart12();
+                    if (id === 'slide-13') animateGauges();
+
+                    // Optional: Unobserve if we only want to animate once
+                    // observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Start observing all sections
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.reveal-section');
+            sections.forEach(sec => sectionObserver.observe(sec));
+            
+            // Fix initial hero section state
+            document.getElementById('slide-0').querySelector('.reveal-section').classList.add('is-visible');
+        });
+
+        // Fullscreen Toggle
+        function toggleFullscreen() {
+            const elem = document.documentElement;
+            if (!document.fullscreenElement) {
+                elem.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        document.getElementById('btn-fullscreen').addEventListener('click', toggleFullscreen);
+
+    </script>
+</body>
+</html>
