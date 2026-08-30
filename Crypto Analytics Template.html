@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kripto Dashboard</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Prilagođavanje scrollbar-a za tamnu temu */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a; 
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155; 
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569; 
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-200 font-sans p-4 md:p-6 min-h-screen">
+
+  <div id="app" class="max-w-screen-2xl mx-auto">
+    
+    <!-- HEADER / GLOBAL STATS -->
+    <div class="mb-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-white flex items-center gap-2">
+            <i data-lucide="activity" class="text-blue-500 w-8 h-8"></i>
+            <span data-i18n="title">Crypto Analytics</span> 
+            <span class="text-sm font-normal bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full animate-pulse">Live</span>
+          </h1>
+          <p class="text-slate-400 mt-1" data-i18n="subtitle">Real-time cryptocurrency market tracking</p>
+        </div>
+        
+        <div class="flex gap-4 mt-4 md:mt-0 items-center">
+          <button id="langToggleBtn" class="flex items-center gap-2 bg-slate-900 border border-slate-800 hover:bg-slate-800 px-3 py-2 rounded-lg transition-colors text-sm font-medium">
+            <i data-lucide="globe" class="w-4 h-4 text-blue-500"></i>
+            <span id="currentLangLabel">LV</span>
+          </button>
+          <div class="relative">
+            <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 w-4 h-4"></i>
+            <input 
+              type="text" 
+              id="searchInput"
+              data-i18n-placeholder="searchPlaceholder"
+              placeholder="Search..." 
+              class="bg-slate-900 border border-slate-800 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:border-blue-500 transition-colors w-64 text-sm text-white"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- Stat Card 1 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+          <div class="flex items-center gap-2 text-slate-400 mb-2">
+            <i data-lucide="pie-chart" class="w-4 h-4"></i>
+            <span class="text-sm font-medium" data-i18n="totalMarketCap">Total Market Cap</span>
+          </div>
+          <div class="text-2xl font-bold text-white mb-1">$2.34T</div>
+          <div class="text-sm font-medium flex items-center text-green-500">
+            <i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +1.2%
+          </div>
+        </div>
+        
+        <!-- Stat Card 2 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+          <div class="flex items-center gap-2 text-slate-400 mb-2">
+            <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+            <span class="text-sm font-medium" data-i18n="vol24h">24h Volume</span>
+          </div>
+          <div class="text-2xl font-bold text-white mb-1">$84.5B</div>
+          <div class="text-sm font-medium flex items-center text-red-500">
+            <i data-lucide="trending-down" class="w-3 h-3 mr-1"></i> -5.4%
+          </div>
+        </div>
+
+        <!-- Stat Card 3 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+          <div class="flex items-center gap-2 text-slate-400 mb-2">
+            <i data-lucide="trending-up" class="w-4 h-4"></i>
+            <span class="text-sm font-medium" data-i18n="btcDom">BTC Dominance</span>
+          </div>
+          <div class="text-2xl font-bold text-white mb-1">53.4%</div>
+          <div class="text-sm font-medium flex items-center text-green-500">
+            <i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +0.1%
+          </div>
+        </div>
+
+        <!-- Fear & Greed -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+          <div class="flex items-center gap-2 text-slate-400 mb-2">
+            <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+            <span class="text-sm font-medium" data-i18n="fearGreed">Fear & Greed</span>
+          </div>
+          <div class="flex items-end gap-2">
+            <span class="text-2xl font-bold text-green-500">72</span>
+            <span class="text-sm text-green-500/80 mb-1" data-i18n="greed">Greed</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2 mt-3 rounded-full overflow-hidden flex relative">
+            <div class="bg-red-500 w-1/4 h-full"></div>
+            <div class="bg-yellow-500 w-1/4 h-full"></div>
+            <div class="bg-green-400 w-1/4 h-full"></div>
+            <div class="bg-green-600 w-1/4 h-full"></div>
+            <div class="absolute w-1 h-full bg-white top-0" style="left: 72%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- LEVA STRANA: Grafikon i Tabela -->
+      <div class="lg:col-span-2 flex flex-col gap-6">
+        
+        <!-- MAIN CHART WIDGET -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+          
+          <div class="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4 sm:gap-0">
+            <div>
+              <div class="flex items-center gap-3">
+                <div id="scIcon" class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xl"></div>
+                <div>
+                  <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <span id="scName"></span> <span id="scSymbol" class="text-slate-500 text-lg"></span>
+                  </h2>
+                </div>
+              </div>
+              <div class="mt-2 flex items-baseline gap-3">
+                <span id="scPrice" class="text-4xl font-bold text-white"></span>
+                <span id="scChange" class="flex items-center text-lg font-medium"></span>
+              </div>
+            </div>
+
+            <!-- Timeframe Selector -->
+            <div class="flex bg-slate-950 rounded-lg p-1 border border-slate-800" id="timeframeSelector">
+              <button data-tf="1D" class="tf-btn px-4 py-1.5 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white">1D</button>
+              <button data-tf="1W" class="tf-btn px-4 py-1.5 rounded-md text-sm font-medium transition-colors text-slate-400 hover:text-white hover:bg-slate-800">1W</button>
+              <button data-tf="1M" class="tf-btn px-4 py-1.5 rounded-md text-sm font-medium transition-colors text-slate-400 hover:text-white hover:bg-slate-800">1M</button>
+              <button data-tf="1Y" class="tf-btn px-4 py-1.5 rounded-md text-sm font-medium transition-colors text-slate-400 hover:text-white hover:bg-slate-800">1Y</button>
+            </div>
+          </div>
+
+          <div class="h-80 w-full mt-4">
+            <canvas id="mainChart"></canvas>
+          </div>
+        </div>
+
+        <!-- MARKET TABLE -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+          <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+            <h3 class="font-bold text-lg text-white" data-i18n="topCryptos">Top Cryptocurrencies</h3>
+            <button class="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
+              <span data-i18n="showAll">Show all</span> <i data-lucide="maximize-2" class="w-3 h-3"></i>
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm whitespace-nowrap">
+              <thead class="bg-slate-950/50 text-slate-400">
+                <tr>
+                  <th class="p-4 font-medium w-16 text-center">#</th>
+                  <th class="p-4 font-medium" data-i18n="asset">Asset</th>
+                  <th class="p-4 font-medium text-right" data-i18n="price">Price</th>
+                  <th class="p-4 font-medium text-right">1h %</th>
+                  <th class="p-4 font-medium text-right">24h %</th>
+                  <th class="p-4 font-medium text-right hidden sm:table-cell">7d %</th>
+                  <th class="p-4 font-medium text-right hidden md:table-cell" data-i18n="marketCap">Market Cap</th>
+                  <th class="p-4 font-medium text-right hidden lg:table-cell" data-i18n="volume">Volume (24h)</th>
+                </tr>
+              </thead>
+              <tbody id="cryptoTableBody" class="divide-y divide-slate-800/50">
+                <!-- Redovi se ubacuju preko JS-a -->
+              </tbody>
+            </table>
+            <div id="noResults" class="hidden p-8 text-center text-slate-500" data-i18n="notFound">
+              No coins found matching your search.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DESNA STRANA: Detalji i Top Movers -->
+      <div class="flex flex-col gap-6">
+        
+        <!-- DETALJI IZABRANOG NOVČIĆA -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="font-bold text-lg text-white border-b border-slate-800 pb-4 mb-4 flex items-center justify-between">
+            <span data-i18n="marketStats">Market Statistics</span>
+            <span id="statsSymbolBadge" class="bg-slate-800 text-slate-300 text-xs px-2 py-1 rounded"></span>
+          </h3>
+          
+          <div class="space-y-4" id="detailsContainer">
+            <!-- Detalji se generišu preko JS-a -->
+          </div>
+          
+          <button class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+            <i data-lucide="zap" class="w-4 h-4"></i> <span data-i18n="buy">Buy</span> <span id="buyBtnSymbol"></span>
+          </button>
+        </div>
+
+        <!-- TOP MOVERS WIDGET -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="font-bold text-lg text-white mb-4 flex items-center gap-2">
+            <i data-lucide="trending-up" class="w-5 h-5 text-blue-500"></i> <span data-i18n="topMovers">Top Movers (24h)</span>
+          </h3>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <h4 class="text-xs text-slate-500 uppercase font-bold mb-3 flex items-center gap-1">
+                <i data-lucide="trending-up" class="w-3 h-3 text-green-500"></i> <span data-i18n="gainers">Gainers</span>
+              </h4>
+              <div id="topGainersList" class="space-y-3"></div>
+            </div>
+            
+            <div>
+              <h4 class="text-xs text-slate-500 uppercase font-bold mb-3 flex items-center gap-1">
+                <i data-lucide="trending-down" class="w-3 h-3 text-red-500"></i> <span data-i18n="losers">Losers</span>
+              </h4>
+              <div id="topLosersList" class="space-y-3"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECURITY / INFO -->
+        <div class="bg-gradient-to-br from-slate-900 to-blue-900/20 border border-blue-900/50 rounded-xl p-6">
+          <div class="flex items-start gap-4">
+            <div class="bg-blue-500/20 p-2 rounded-lg text-blue-400">
+              <i data-lucide="shield" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h4 class="text-white font-medium mb-1" data-i18n="securityTitle">Security first</h4>
+              <p class="text-sm text-slate-400" data-i18n="securityDesc">Make sure to use hardware wallets for storing large amounts of crypto and never share your private keys.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- MOCK PODACI I PREVODI ---
+    const initialCryptos = [
+      { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin', price: 64230.50, change1h: -0.15, change24h: 2.34, change7d: 5.12, marketCap: 1250000000000, volume24h: 35000000000, supply: 19650000, maxSupply: 21000000, ath: 73750, rank: 1, color: '#F7931A' },
+      { id: 'ethereum', symbol: 'ETH', name: 'Ethereum', price: 3450.20, change1h: 0.20, change24h: 1.50, change7d: -2.10, marketCap: 415000000000, volume24h: 15000000000, supply: 120000000, maxSupply: null, ath: 4891, rank: 2, color: '#627EEA' },
+      { id: 'tether', symbol: 'USDT', name: 'Tether', price: 1.00, change1h: 0.01, change24h: -0.01, change7d: 0.02, marketCap: 104000000000, volume24h: 45000000000, supply: 104000000000, maxSupply: null, ath: 1.02, rank: 3, color: '#26A17B' },
+      { id: 'bnb', symbol: 'BNB', name: 'BNB', price: 580.45, change1h: -0.50, change24h: 4.20, change7d: 8.50, marketCap: 89000000000, volume24h: 2100000000, supply: 153000000, maxSupply: 200000000, ath: 690, rank: 4, color: '#F3BA2F' },
+      { id: 'solana', symbol: 'SOL', name: 'Solana', price: 145.60, change1h: 1.20, change24h: -3.40, change7d: 12.40, marketCap: 65000000000, volume24h: 4200000000, supply: 443000000, maxSupply: null, ath: 260, rank: 5, color: '#14F195' },
+      { id: 'xrp', symbol: 'XRP', name: 'XRP', price: 0.62, change1h: -0.10, change24h: 0.50, change7d: -1.20, marketCap: 34000000000, volume24h: 1200000000, supply: 54000000000, maxSupply: 100000000000, ath: 3.84, rank: 6, color: '#23292F' },
+      { id: 'usdc', symbol: 'USDC', name: 'USDC', price: 1.00, change1h: 0.00, change24h: 0.00, change7d: 0.01, marketCap: 32000000000, volume24h: 4000000000, supply: 32000000000, maxSupply: null, ath: 1.04, rank: 7, color: '#2775CA' },
+      { id: 'cardano', symbol: 'ADA', name: 'Cardano', price: 0.45, change1h: 0.30, change24h: 1.10, change7d: 2.50, marketCap: 16000000000, volume24h: 450000000, supply: 35000000000, maxSupply: 45000000000, ath: 3.10, rank: 8, color: '#0033AD' },
+      { id: 'avalanche', symbol: 'AVAX', name: 'Avalanche', price: 35.20, change1h: -1.10, change24h: -2.50, change7d: -5.40, marketCap: 13000000000, volume24h: 600000000, supply: 377000000, maxSupply: 720000000, ath: 146, rank: 9, color: '#E84142' },
+      { id: 'dogecoin', symbol: 'DOGE', name: 'Dogecoin', price: 0.16, change1h: 2.50, change24h: 15.40, change7d: 25.60, marketCap: 23000000000, volume24h: 3500000000, supply: 143000000000, maxSupply: null, ath: 0.73, rank: 10, color: '#C2A633' },
+    ];
+
+    const translations = {
+      en: {
+        title: "Crypto Analytics", subtitle: "Real-time cryptocurrency market tracking", searchPlaceholder: "Search...",
+        totalMarketCap: "Total Market Cap", vol24h: "24h Volume", btcDom: "BTC Dominance", fearGreed: "Fear & Greed",
+        greed: "Greed", price: "Price", topCryptos: "Top Cryptocurrencies", showAll: "Show all", asset: "Asset",
+        marketCap: "Market Cap", volume: "Volume (24h)", notFound: "No coins found matching your search.",
+        marketStats: "Market Statistics", fdv: "Fully Diluted Val.", fdvTooltip: "If all coins were in circulation.",
+        volCapRatio: "Volume / Market Cap", circSupply: "Circulating Supply", maxSupply: "Max Supply",
+        unlimited: "Unlimited", issuedCoins: "Issued coins", ath: "All-Time High (ATH)", dropFromAth: "Drop from ATH",
+        buy: "Buy", topMovers: "Top Movers (24h)", gainers: "Gainers", losers: "Losers",
+        securityTitle: "Security first", securityDesc: "Make sure to use hardware wallets for storing large amounts of crypto and never share your private keys."
+      },
+      lv: {
+        title: "Kripto Analītika", subtitle: "Kriptovalūtu tirgus izsekošana reāllaikā", searchPlaceholder: "Meklēt...",
+        totalMarketCap: "Kopējā Tirgus Kap.", vol24h: "24h Apjoms", btcDom: "BTC Dominance", fearGreed: "Bailes un Alkatība",
+        greed: "Alkatība", price: "Cena", topCryptos: "Top Kriptovalūtas", showAll: "Rādīt visu", asset: "Aktīvs",
+        marketCap: "Tirgus Kap.", volume: "Apjoms (24h)", notFound: "Nav atrasta neviena monēta, kas atbilstu meklēšanai.",
+        marketStats: "Tirgus Statistika", fdv: "Pilnībā Atšķaidīta Kap.", fdvTooltip: "Ja visas monētas būtu apgrozībā.",
+        volCapRatio: "Apjoms / Tirgus Kap.", circSupply: "Apgrozībā esošais piedāvājums", maxSupply: "Maksimālais piedāvājums",
+        unlimited: "Neierobežots", issuedCoins: "Izdotās monētas", ath: "Vēsturiski augstākais (ATH)", dropFromAth: "Kritums no ATH",
+        buy: "Pirkt", topMovers: "Lielākās Izmaiņas (24h)", gainers: "Ieguvēji", losers: "Zaudētāji",
+        securityTitle: "Drošība pirmajā vietā", securityDesc: "Pārliecinieties, ka izmantojat aparatūras makus, lai uzglabātu lielus kriptovalūtu apjomus, un nekad nedalieties ar savām privātajām atslēgām."
+      }
+    };
+
+    // --- GLOBALNI STATE ---
+    let cryptos = JSON.parse(JSON.stringify(initialCryptos));
+    let selectedCoinId = cryptos[0].id;
+    let timeframe = '1D';
+    let searchQuery = '';
+    let currentLang = 'en';
+    let mainChartInstance = null;
+
+    // --- POMOĆNE FUNKCIJE ---
+    const formatCurrency = (value) => {
+      if (value >= 1e12) return `$${(value / 1e12).toFixed(2)}T`;
+      if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
+      if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`;
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+    };
+
+    const formatNumber = (value) => {
+      if (!value) return '∞';
+      if (value >= 1e9) return `${(value / 1e9).toFixed(2)}B`;
+      if (value >= 1e6) return `${(value / 1e6).toFixed(2)}M`;
+      return new Intl.NumberFormat('en-US').format(value);
+    };
+
+    const generateChartData = (basePrice, dataPoints, volatility) => {
+      let currentPrice = basePrice * (1 - (volatility / 2) + Math.random() * volatility);
+      const labels = [];
+      const data = [];
+      const now = new Date();
+      
+      for (let i = dataPoints; i >= 0; i--) {
+        labels.push(new Date(now.getTime() - i * 3600000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+        data.push(currentPrice);
+        // Random walk
+        const change = currentPrice * (Math.random() * volatility - (volatility / 2));
+        currentPrice += change;
+      }
+      return { labels, data };
+    };
+
+    const getSelectedCoin = () => cryptos.find(c => c.id === selectedCoinId) || cryptos[0];
+
+    // --- RENDEROVANJE DOM-a ---
+
+    // 1. Prevodi
+    const applyTranslations = () => {
+      const t = translations[currentLang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) el.textContent = t[key];
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (t[key]) el.setAttribute('placeholder', t[key]);
+      });
+      document.getElementById('currentLangLabel').textContent = currentLang === 'en' ? 'LV' : 'EN';
+    };
+
+    // 2. Glavni detalji kovanice iznad grafikona
+    const updateMainCoinDetails = () => {
+      const coin = getSelectedCoin();
+      const isPositive = coin.change24h >= 0;
+      
+      document.getElementById('scIcon').style.backgroundColor = coin.color;
+      document.getElementById('scIcon').textContent = coin.symbol.charAt(0);
+      document.getElementById('scName').textContent = coin.name;
+      document.getElementById('scSymbol').textContent = coin.symbol;
+      document.getElementById('statsSymbolBadge').textContent = coin.symbol;
+      document.getElementById('buyBtnSymbol').textContent = coin.symbol;
+      
+      document.getElementById('scPrice').textContent = formatCurrency(coin.price);
+      
+      const changeEl = document.getElementById('scChange');
+      changeEl.className = `flex items-center text-lg font-medium ${isPositive ? 'text-green-500' : 'text-red-500'}`;
+      changeEl.innerHTML = `
+        <i data-lucide="${isPositive ? 'arrow-up-right' : 'arrow-down-right'}" class="w-5 h-5 mr-1"></i>
+        ${Math.abs(coin.change24h).toFixed(2)}% (24h)
+      `;
+      lucide.createIcons({ root: changeEl });
+    };
+
+    // 3. Tabela
+    const renderTable = () => {
+      const tbody = document.getElementById('cryptoTableBody');
+      const noResults = document.getElementById('noResults');
+      
+      const filteredCryptos = cryptos.filter(c => 
+        c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        c.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      if (filteredCryptos.length === 0) {
+        tbody.innerHTML = '';
+        noResults.classList.remove('hidden');
+        return;
+      }
+      
+      noResults.classList.add('hidden');
+      tbody.innerHTML = filteredCryptos.map(coin => {
+        const isSelected = selectedCoinId === coin.id;
+        const c1hClass = coin.change1h >= 0 ? 'text-green-500' : 'text-red-500';
+        const c24hClass = coin.change24h >= 0 ? 'text-green-500' : 'text-red-500';
+        const c7dClass = coin.change7d >= 0 ? 'text-green-500' : 'text-red-500';
+        
+        return `
+          <tr 
+            onclick="selectCoin('${coin.id}')"
+            class="hover:bg-slate-800/50 cursor-pointer transition-colors ${isSelected ? 'bg-slate-800/80 border-l-2 border-blue-500' : 'border-l-2 border-transparent'}"
+          >
+            <td class="p-4 text-center text-slate-500">${coin.rank}</td>
+            <td class="p-4">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs" style="background-color: ${coin.color}">
+                  ${coin.symbol.charAt(0)}
+                </div>
+                <div>
+                  <div class="font-bold text-white">${coin.name}</div>
+                  <div class="text-xs text-slate-500">${coin.symbol}</div>
+                </div>
+              </div>
+            </td>
+            <td class="p-4 text-right font-medium text-white transition-all duration-300 coin-price" data-id="${coin.id}">
+              ${formatCurrency(coin.price)}
+            </td>
+            <td class="p-4 text-right font-medium ${c1hClass} coin-1h" data-id="${coin.id}">
+              ${coin.change1h > 0 ? '+' : ''}${coin.change1h.toFixed(2)}%
+            </td>
+            <td class="p-4 text-right font-medium ${c24hClass}">
+              ${coin.change24h > 0 ? '+' : ''}${coin.change24h.toFixed(2)}%
+            </td>
+            <td class="p-4 text-right font-medium hidden sm:table-cell ${c7dClass}">
+              ${coin.change7d > 0 ? '+' : ''}${coin.change7d.toFixed(2)}%
+            </td>
+            <td class="p-4 text-right text-slate-300 hidden md:table-cell">
+              ${formatCurrency(coin.marketCap)}
+            </td>
+            <td class="p-4 text-right text-slate-300 hidden lg:table-cell">
+              ${formatCurrency(coin.volume24h)}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    };
+
+    // Optimizovano ažuriranje samo promenljivih brojeva u tabeli za Live osećaj
+    const updateTablePrices = () => {
+      cryptos.forEach(coin => {
+        const priceTd = document.querySelector(`.coin-price[data-id="${coin.id}"]`);
+        const c1hTd = document.querySelector(`.coin-1h[data-id="${coin.id}"]`);
+        if (priceTd && c1hTd) {
+          priceTd.textContent = formatCurrency(coin.price);
+          c1hTd.textContent = `${coin.change1h > 0 ? '+' : ''}${coin.change1h.toFixed(2)}%`;
+          c1hTd.className = `p-4 text-right font-medium coin-1h ${coin.change1h >= 0 ? 'text-green-500' : 'text-red-500'}`;
+        }
+      });
+    };
+
+    // 4. Detalji panela
+    const renderRightPanelDetails = () => {
+      const coin = getSelectedCoin();
+      const t = translations[currentLang];
+      const container = document.getElementById('detailsContainer');
+      
+      const fdv = coin.price * (coin.maxSupply || coin.supply);
+      const ratio = ((coin.volume24h / coin.marketCap) * 100).toFixed(2);
+      const issuedPct = coin.maxSupply ? ((coin.supply / coin.maxSupply) * 100).toFixed(0) : 'N/A';
+      const athDrop = (((coin.price - coin.ath) / coin.ath) * 100).toFixed(2);
+      
+      container.innerHTML = `
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400 text-sm">${t.marketCap}</span>
+          <span class="text-slate-200 text-sm font-medium text-right">${formatCurrency(coin.marketCap)}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400 text-sm cursor-help" title="${t.fdvTooltip}">${t.fdv}</span>
+          <span class="text-slate-200 text-sm font-medium text-right">${formatCurrency(fdv)}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400 text-sm">${t.volume}</span>
+          <span class="text-slate-200 text-sm font-medium text-right">${formatCurrency(coin.volume24h)}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400 text-sm">${t.volCapRatio}</span>
+          <span class="text-slate-200 text-sm font-medium text-right">${ratio}%</span>
+        </div>
+        
+        <div class="my-4 border-t border-slate-800"></div>
+        
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400 text-sm">${t.circSupply}</span>
+          <span class="text-slate-200 text-sm font-medium text-right">${formatNumber(coin.supply)} ${coin.symbol}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400 text-sm">${t.maxSupply}</span>
+          <span class="text-slate-200 text-sm font-medium text-right">${coin.maxSupply ? formatNumber(coin.maxSupply) + ' ' + coin.symbol : t.unlimited}</span>
+        </div>
+        
+        <div class="mt-4 pt-4">
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-slate-400">${t.issuedCoins}</span>
+            <span class="text-slate-300 font-medium">${issuedPct}%</span>
+          </div>
+          ${coin.maxSupply ? `
+            <div class="w-full bg-slate-800 rounded-full h-1.5">
+              <div class="bg-blue-500 h-1.5 rounded-full" style="width: ${issuedPct}%"></div>
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="my-4 border-t border-slate-800"></div>
+
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400 text-sm">${t.ath}</span>
+          <span class="text-slate-200 text-sm font-medium text-right">${formatCurrency(coin.ath)}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400 text-sm">${t.dropFromAth}</span>
+          <span class="text-slate-200 text-sm font-medium text-right"><span class="text-red-500">${athDrop}%</span></span>
+        </div>
+      `;
+    };
+
+    // 5. Top Movers
+    const renderTopMovers = () => {
+      const topGainers = [...cryptos].sort((a, b) => b.change24h - a.change24h).slice(0, 3);
+      const topLosers = [...cryptos].sort((a, b) => a.change24h - b.change24h).slice(0, 3);
+      
+      const createHtml = (list, isGainer) => list.map(coin => `
+        <div class="flex justify-between items-center cursor-pointer hover:bg-slate-800 p-1 rounded" onclick="selectCoin('${coin.id}')">
+          <span class="text-white text-sm font-medium">${coin.symbol}</span>
+          <span class="${isGainer ? 'text-green-500' : 'text-red-500'} text-sm font-medium">
+            ${isGainer ? '+' : ''}${coin.change24h.toFixed(2)}%
+          </span>
+        </div>
+      `).join('');
+
+      document.getElementById('topGainersList').innerHTML = createHtml(topGainers, true);
+      document.getElementById('topLosersList').innerHTML = createHtml(topLosers, false);
+    };
+
+    // 6. Chart.js Grafikon
+    const updateChart = () => {
+      const coin = getSelectedCoin();
+      let points = 24;
+      let volatility = 0.02;
+      
+      if (timeframe === '1W') { points = 7; volatility = 0.05; }
+      if (timeframe === '1M') { points = 30; volatility = 0.1; }
+      if (timeframe === '1Y') { points = 12; volatility = 0.3; }
+      
+      const chartData = generateChartData(coin.price, points, volatility);
+      const isPositive = coin.change24h >= 0;
+      const mainColor = isPositive ? '#10B981' : '#EF4444'; // Emerald for positive, Red for negative
+
+      const ctx = document.getElementById('mainChart').getContext('2d');
+      
+      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+      gradient.addColorStop(0, isPositive ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)');
+      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+      if (mainChartInstance) {
+        mainChartInstance.data.labels = chartData.labels;
+        mainChartInstance.data.datasets[0].data = chartData.data;
+        mainChartInstance.data.datasets[0].borderColor = mainColor;
+        mainChartInstance.data.datasets[0].backgroundColor = gradient;
+        mainChartInstance.update();
+      } else {
+        Chart.defaults.color = '#64748B';
+        Chart.defaults.font.family = 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
+        
+        mainChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: chartData.labels,
+            datasets: [{
+              label: 'Price',
+              data: chartData.data,
+              borderColor: mainColor,
+              backgroundColor: gradient,
+              borderWidth: 2,
+              fill: true,
+              pointRadius: 0,
+              pointHoverRadius: 6,
+              pointBackgroundColor: mainColor,
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false, // Isključeno za live utisak
+            interaction: {
+              mode: 'index',
+              intersect: false,
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#0F172A',
+                titleColor: '#94A3B8',
+                bodyColor: '#fff',
+                borderColor: '#1E293B',
+                borderWidth: 1,
+                padding: 10,
+                displayColors: false,
+                callbacks: {
+                  label: function(context) {
+                    return formatCurrency(context.parsed.y);
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { display: false, drawBorder: false },
+                ticks: { maxTicksLimit: 6 }
+              },
+              y: {
+                grid: { color: '#1E293B', drawBorder: false, borderDash: [3, 3] },
+                ticks: {
+                  callback: function(value) {
+                    return value > 1000 ? '$' + (value/1000).toFixed(0) + 'k' : '$' + value;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+    };
+
+    // --- AKCIJE I EVENT LISTENERS ---
+
+    const selectCoin = (id) => {
+      selectedCoinId = id;
+      renderTable(); // Update active class
+      updateMainCoinDetails();
+      renderRightPanelDetails();
+      updateChart();
+    };
+
+    const setTimeframe = (tf, btnElement) => {
+      timeframe = tf;
+      // Update dugmiće
+      document.querySelectorAll('.tf-btn').forEach(btn => {
+        btn.className = 'tf-btn px-4 py-1.5 rounded-md text-sm font-medium transition-colors text-slate-400 hover:text-white hover:bg-slate-800';
+      });
+      btnElement.className = 'tf-btn px-4 py-1.5 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white';
+      
+      updateChart();
+    };
+
+    // Setup event listeners
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderTable();
+    });
+
+    document.getElementById('langToggleBtn').addEventListener('click', () => {
+      currentLang = currentLang === 'en' ? 'lv' : 'en';
+      applyTranslations();
+      renderRightPanelDetails(); // Osveži desni panel zbog labela
+      renderTable(); // Osveži tabelu zbog labela u headeru
+    });
+
+    document.getElementById('timeframeSelector').addEventListener('click', (e) => {
+      if(e.target.tagName === 'BUTTON') {
+        setTimeframe(e.target.getAttribute('data-tf'), e.target);
+      }
+    });
+
+    // Simulacija žive trgovine (interval)
+    setInterval(() => {
+      cryptos = cryptos.map(coin => {
+        const isStable = ['USDT', 'USDC'].includes(coin.symbol);
+        const volatility = isStable ? 0.0001 : 0.002; 
+        
+        const changePercent = (Math.random() * volatility) - (volatility / 2);
+        const newPrice = coin.price * (1 + changePercent);
+        const new1h = coin.change1h + (changePercent * 100);
+        
+        return {
+          ...coin,
+          price: newPrice,
+          change1h: new1h,
+        };
+      });
+
+      updateMainCoinDetails();
+      updateTablePrices();
+      renderRightPanelDetails(); // Zbog ažuriranja FDV i odnosa
+    }, 3000);
+
+    // Inicijalizacija pri učitavanju
+    const init = () => {
+      lucide.createIcons();
+      applyTranslations();
+      renderTable();
+      updateMainCoinDetails();
+      renderRightPanelDetails();
+      renderTopMovers();
+      updateChart();
+    };
+
+    // Start
+    init();
+
+  </script>
+</body>
+</html>
