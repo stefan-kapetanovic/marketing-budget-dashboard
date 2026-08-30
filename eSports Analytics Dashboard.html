@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eSports Analytics</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #111827; }
+    ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-200 font-sans p-4 md:p-6 min-h-screen">
+
+  <div id="app" class="max-w-screen-2xl mx-auto">
+    
+    <!-- HEADER -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-white flex items-center gap-3">
+          <i data-lucide="gamepad-2" class="text-purple-500 w-8 h-8"></i>
+          eSports Analytics
+        </h1>
+        <p class="text-gray-400 mt-1">Prize pools, tournaments, pro players, and YoY growth analytics</p>
+      </div>
+      
+      <div class="mt-4 md:mt-0 bg-gray-900 border border-gray-800 rounded-lg px-4 py-2 flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+        <span class="text-sm font-medium text-gray-300">Live Database</span>
+      </div>
+    </div>
+
+    <!-- GLOBAL STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <!-- Total Prize Money -->
+      <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-4 opacity-10">
+          <i data-lucide="dollar-sign" class="w-16 h-16 text-green-500"></i>
+        </div>
+        <div class="flex items-center gap-2 text-gray-400 mb-2">
+          <i data-lucide="trophy" class="w-4 h-4 text-yellow-500"></i>
+          <span class="text-sm font-medium uppercase tracking-wider">Total Prize Money Awarded</span>
+        </div>
+        <div class="text-4xl font-bold text-white mb-1">$1.48B</div>
+        <div class="text-sm text-green-400 flex items-center">
+          <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i> All-Time High
+        </div>
+      </div>
+      
+      <!-- Total Tournaments -->
+      <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-4 opacity-10">
+          <i data-lucide="calendar" class="w-16 h-16 text-blue-500"></i>
+        </div>
+        <div class="flex items-center gap-2 text-gray-400 mb-2">
+          <i data-lucide="swords" class="w-4 h-4 text-blue-400"></i>
+          <span class="text-sm font-medium uppercase tracking-wider">Tracked Tournaments</span>
+        </div>
+        <div class="text-4xl font-bold text-white mb-1">54,230</div>
+        <div class="text-sm text-gray-500">Across 150+ Games</div>
+      </div>
+
+      <!-- Active Pro Players -->
+      <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-4 opacity-10">
+          <i data-lucide="users" class="w-16 h-16 text-purple-500"></i>
+        </div>
+        <div class="flex items-center gap-2 text-gray-400 mb-2">
+          <i data-lucide="crosshair" class="w-4 h-4 text-purple-400"></i>
+          <span class="text-sm font-medium uppercase tracking-wider">Registered Pro Players</span>
+        </div>
+        <div class="text-4xl font-bold text-white mb-1">128,450</div>
+        <div class="text-sm text-purple-400 flex items-center">
+          <i data-lucide="arrow-up-right" class="w-4 h-4 mr-1"></i> +4.2% YoY Growth
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN LAYOUT -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- LEFT COLUMN: Charts & Games Table -->
+      <div class="lg:col-span-2 flex flex-col gap-6">
+        
+        <!-- CHART WIDGET 1 -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                Prize Pool History: <span id="chartTitleGame" class="text-purple-400">Dota 2</span>
+              </h2>
+              <p class="text-sm text-gray-400">Total cash awarded per year (in millions USD)</p>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-2">
+              <i data-lucide="bar-chart-3" class="w-5 h-5 text-gray-400"></i>
+            </div>
+          </div>
+          <div class="h-64 w-full">
+            <canvas id="prizeChart"></canvas>
+          </div>
+        </div>
+
+        <!-- CHART WIDGET 2 (YoY Growth Comparison) -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                Year-over-Year Growth Rate (YoY)
+              </h2>
+              <p class="text-sm text-gray-400">Percentage change in prize pool compared to previous year (%)</p>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-2">
+              <i data-lucide="trending-up" class="w-5 h-5 text-green-400"></i>
+            </div>
+          </div>
+          <div class="h-60 w-full">
+            <canvas id="growthChart"></canvas>
+          </div>
+        </div>
+
+        <!-- TOP GAMES TABLE -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+          <div class="p-5 border-b border-gray-800 bg-gray-900/50">
+            <h3 class="font-bold text-lg text-white">Top eSports Titles by Prize Pool</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm whitespace-nowrap">
+              <thead class="bg-gray-950/50 text-gray-400 uppercase text-xs tracking-wider">
+                <tr>
+                  <th class="p-4 font-medium w-16 text-center">Rank</th>
+                  <th class="p-4 font-medium">Game Title</th>
+                  <th class="p-4 font-medium text-right">Total Prize Pool</th>
+                  <th class="p-4 font-medium text-right">Tournaments</th>
+                  <th class="p-4 font-medium text-right hidden sm:table-cell">Players</th>
+                </tr>
+              </thead>
+              <tbody id="gamesTableBody" class="divide-y divide-gray-800/50">
+                <!-- Rows injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Selected Game Details & Top Earners -->
+      <div class="flex flex-col gap-6">
+        
+        <!-- GAME SUMMARY -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 relative">
+          <div id="gameColorBorder" class="absolute top-0 left-0 w-full h-1 bg-red-500 rounded-t-xl transition-colors duration-500"></div>
+          
+          <h3 class="text-gray-400 text-sm uppercase tracking-wider mb-1">Selected Game</h3>
+          <h2 id="summaryGameName" class="text-3xl font-bold text-white mb-6">Dota 2</h2>
+          
+          <div class="space-y-4">
+            <div class="flex justify-between items-center pb-4 border-b border-gray-800">
+              <div class="flex items-center gap-2 text-gray-400">
+                <i data-lucide="dollar-sign" class="w-4 h-4"></i> Total Prizes
+              </div>
+              <span id="summaryPrize" class="text-xl font-bold text-green-400">$345.5M</span>
+            </div>
+            
+            <div class="flex justify-between items-center pb-4 border-b border-gray-800">
+              <div class="flex items-center gap-2 text-gray-400">
+                <i data-lucide="swords" class="w-4 h-4"></i> Avg per Tournament
+              </div>
+              <span id="summaryAvgPrize" class="text-lg font-medium text-white">$198.5K</span>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-2 text-gray-400">
+                <i data-lucide="users" class="w-4 h-4"></i> Avg per Player
+              </div>
+              <span id="summaryAvgPlayer" class="text-lg font-medium text-white">$75.4K</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TOP EARNERS LIST -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 flex-grow">
+          <h3 class="font-bold text-lg text-white mb-6 flex items-center gap-2">
+            <i data-lucide="award" class="text-yellow-500 w-5 h-5"></i>
+            Top Earners (All Time)
+          </h3>
+          
+          <div id="topEarnersList" class="space-y-4">
+            <!-- Earners injected via JS -->
+          </div>
+          
+          <button class="w-full mt-6 py-3 border border-gray-700 hover:bg-gray-800 text-gray-300 text-sm font-medium rounded-lg transition-colors flex justify-center items-center gap-2">
+            View Full Leaderboard <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+    
+    <!-- REFERENCES SECTION -->
+    <div class="mt-12 pt-6 border-t border-gray-800">
+      <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+        <i data-lucide="link" class="w-5 h-5 text-gray-400"></i> References and Data Sources (2026 Updated)
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <a href="https://infogram.com/top-20-esports-players-in-2026" target="_blank" class="bg-gray-900 border border-gray-800 rounded-lg p-4 hover:border-blue-500 transition-colors group">
+          <div class="font-medium text-blue-400 group-hover:text-blue-300 mb-1 flex justify-between items-start">
+            Top 20 eSports Players in 2026
+            <i data-lucide="external-link" class="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity"></i>
+          </div>
+          <div class="text-xs text-gray-500">infogram.com / esports-earnings</div>
+        </a>
+        <a href="https://freegaminglounge.com/top-esports-prize-pools-2026/" target="_blank" class="bg-gray-900 border border-gray-800 rounded-lg p-4 hover:border-blue-500 transition-colors group">
+          <div class="font-medium text-blue-400 group-hover:text-blue-300 mb-1 flex justify-between items-start">
+            Top eSports Prize Pools & Market Trends 2026
+            <i data-lucide="external-link" class="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity"></i>
+          </div>
+          <div class="text-xs text-gray-500">freegaminglounge.com</div>
+        </a>
+        <a href="https://insider-gaming.com/highest-earning-esports-players-2026/" target="_blank" class="bg-gray-900 border border-gray-800 rounded-lg p-4 hover:border-blue-500 transition-colors group">
+          <div class="font-medium text-blue-400 group-hover:text-blue-300 mb-1 flex justify-between items-start">
+            Highest Earning eSports Players 2026 Report
+            <i data-lucide="external-link" class="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity"></i>
+          </div>
+          <div class="text-xs text-gray-500">insider-gaming.com</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- MOCK DATA ---
+    const gamesData = [
+      { 
+        id: 'csgo', 
+        name: 'Counter-Strike', 
+        prize: 162000000, 
+        tournaments: 7200, 
+        players: 16500, 
+        color: '#F59E0B', 
+        history: [22.5, 21.1, 15.8, 20.2, 13.6, 14.5],
+        topEarners: [
+          { name: 'apEX', realName: 'Dan Madesclaire', country: 'FR', earnings: 2378015, team: 'Vitality' },
+          { name: 'dupreeh', realName: 'Peter Rasmussen', country: 'DK', earnings: 2190000, team: 'Falcons' },
+          { name: 'dev1ce', realName: 'Nicolai Reedtz', country: 'DK', earnings: 1980000, team: 'Astralis' },
+          { name: 's1mple', realName: 'Oleksandr Kostyliev', country: 'UA', earnings: 1750000, team: 'NAVI' },
+          { name: 'Magisk', realName: 'Emil Reif', country: 'DK', earnings: 1720000, team: 'Falcons' }
+        ] 
+      },
+      { 
+        id: 'dota2', 
+        name: 'Dota 2', 
+        prize: 345500000, 
+        tournaments: 1800, 
+        players: 4600, 
+        color: '#EF4444',
+        history: [40.0, 32.8, 31.0, 18.5, 11.6, 12.0], 
+        topEarners: [
+          { name: 'N0tail', realName: 'Johan Sundstein', country: 'DK', earnings: 7184163, team: 'OG' },
+          { name: 'JerAx', realName: 'Jesse Vainikka', country: 'FI', earnings: 6486623, team: 'OG' },
+          { name: 'Miposhka', realName: 'Yaroslav Naidenov', country: 'RU', earnings: 6250134, team: 'Team Spirit' },
+          { name: 'ana', realName: 'Anathan Pham', country: 'AU', earnings: 6024411, team: 'OG' },
+          { name: 'Yatoro', realName: 'Ilya Mulyarchuk', country: 'UA', earnings: 5955099, team: 'Team Spirit' }
+        ] 
+      },
+      { 
+        id: 'fortnite', 
+        name: 'Fortnite', 
+        prize: 175000000, 
+        tournaments: 1300, 
+        players: 6800, 
+        color: '#8B5CF6', 
+        history: [64.4, 17.0, 20.0, 16.5, 10.0, 11.5],
+        topEarners: [
+          { name: 'Bugha', realName: 'Kyle Giersdorf', country: 'US', earnings: 3784225, team: 'Sentinels' },
+          { name: 'Aqua', realName: 'David Wang', country: 'AT', earnings: 2100000, team: 'LootBoy' },
+          { name: 'psalm', realName: 'Harrison Chang', country: 'US', earnings: 1800000, team: 'CLG' },
+          { name: 'EpikWhale', realName: 'Shane Cotton', country: 'US', earnings: 1750000, team: 'FaZe' },
+          { name: 'TaySon', realName: 'Tai Starčič', country: 'SI', earnings: 1200000, team: 'Falcons' }
+        ] 
+      },
+      { 
+        id: 'lol', 
+        name: 'League of Legends', 
+        prize: 105000000, 
+        tournaments: 2900, 
+        players: 9200, 
+        color: '#3B82F6', 
+        history: [15.0, 12.5, 14.2, 16.0, 5.3, 6.5],
+        topEarners: [
+          { name: 'Faker', realName: 'Lee Sang-hyeok', country: 'KR', earnings: 1922084, team: 'T1' },
+          { name: 'Duke', realName: 'Lee Ho-seong', country: 'KR', earnings: 950000, team: 'Retired' },
+          { name: 'Rookie', realName: 'Song Eui-jin', country: 'KR', earnings: 810000, team: 'NIP' },
+          { name: 'Bang', realName: 'Bae Jun-sik', country: 'KR', earnings: 780000, team: 'Retired' },
+          { name: 'Wolf', realName: 'Lee Jae-wan', country: 'KR', earnings: 750000, team: 'Retired' }
+        ] 
+      },
+      { 
+        id: 'rocketleague', 
+        name: 'Rocket League', 
+        prize: 45000000, 
+        tournaments: 1100, 
+        players: 3500, 
+        color: '#10B981', 
+        history: [2.5, 4.0, 6.0, 6.5, 7.1, 7.5],
+        topEarners: [
+          { name: 'M0nkey M00n', realName: 'Evan Rogez', country: 'FR', earnings: 1000034, team: 'BDS' },
+          { name: 'Vatira', realName: 'Axel Touret', country: 'FR', earnings: 850000, team: 'Karmine Corp' },
+          { name: 'dralii', realName: 'Samy Hajji', country: 'MA', earnings: 550000, team: 'BDS' },
+          { name: 'Extra', realName: 'Marc Domingo', country: 'FR', earnings: 520000, team: 'BDS' },
+          { name: 'Seikoo', realName: 'Enzo Grondein', country: 'FR', earnings: 490000, team: 'BDS' }
+        ] 
+      },
+    ];
+
+    const years = ['2021', '2022', '2023', '2024', '2025', '2026'];
+
+    // --- STATE ---
+    let selectedGameId = gamesData[1].id; // Default Dota 2
+    let chartInstance = null;
+    let growthChartInstance = null;
+
+    // --- HELPER FUNCTIONS ---
+    const formatCurrency = (value) => {
+      if (value >= 1e6) return `$${(value / 1e6).toFixed(1)}M`;
+      if (value >= 1e3) return `$${(value / 1e3).toFixed(0)}K`;
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+    };
+
+    const formatNumber = (value) => new Intl.NumberFormat('en-US').format(value);
+
+    const getSelectedGame = () => gamesData.find(g => g.id === selectedGameId);
+
+    // Calculate YoY growth percentage
+    const calculateGrowthRates = (history) => {
+      const growth = [];
+      for (let i = 0; i < history.length; i++) {
+        if (i === 0) {
+          growth.push(0); // First year has no previous year
+        } else {
+          const prev = history[i - 1];
+          const curr = history[i];
+          const rate = ((curr - prev) / prev) * 100;
+          growth.push(parseFloat(rate.toFixed(1)));
+        }
+      }
+      return growth;
+    };
+
+    // --- DOM RENDERING ---
+
+    // 1. Render Table
+    const renderTable = () => {
+      const tbody = document.getElementById('gamesTableBody');
+      const sortedGames = [...gamesData].sort((a, b) => b.prize - a.prize);
+      
+      tbody.innerHTML = sortedGames.map((game, index) => {
+        const isSelected = selectedGameId === game.id;
+        
+        return `
+          <tr 
+            onclick="selectGame('${game.id}')"
+            class="hover:bg-gray-800/80 cursor-pointer transition-colors ${isSelected ? 'bg-gray-800/50 border-l-2 border-' + game.color : 'border-l-2 border-transparent'}"
+          >
+            <td class="p-4 text-center font-bold text-gray-500">
+              ${index === 0 ? '<span class="text-yellow-500">1</span>' : 
+                index === 1 ? '<span class="text-gray-300">2</span>' : 
+                index === 2 ? '<span class="text-amber-600">3</span>' : index + 1}
+            </td>
+            <td class="p-4">
+              <div class="flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full" style="background-color: ${game.color}"></div>
+                <span class="font-bold text-white text-base">${game.name}</span>
+              </div>
+            </td>
+            <td class="p-4 text-right font-bold text-green-400">
+              ${formatCurrency(game.prize)}
+            </td>
+            <td class="p-4 text-right text-gray-300">
+              ${formatNumber(game.tournaments)}
+            </td>
+            <td class="p-4 text-right text-gray-300 hidden sm:table-cell">
+              ${formatNumber(game.players)}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    };
+
+    // 2. Render Game Details (Right panel)
+    const renderGameDetails = () => {
+      const game = getSelectedGame();
+      
+      document.getElementById('chartTitleGame').textContent = game.name;
+      document.getElementById('chartTitleGame').style.color = game.color;
+      document.getElementById('summaryGameName').textContent = game.name;
+      document.getElementById('gameColorBorder').style.backgroundColor = game.color;
+      
+      document.getElementById('summaryPrize').textContent = formatCurrency(game.prize);
+      document.getElementById('summaryAvgPrize').textContent = formatCurrency(game.prize / game.tournaments);
+      document.getElementById('summaryAvgPlayer').textContent = formatCurrency(game.prize / game.players);
+      
+      const topEarnersList = document.getElementById('topEarnersList');
+      topEarnersList.innerHTML = game.topEarners.map((player, index) => `
+        <div class="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700/50 hover:bg-gray-800 transition-colors">
+          <div class="flex items-center gap-4">
+            <div class="font-bold text-gray-500 text-lg w-4 text-center">${index + 1}</div>
+            <div>
+              <div class="font-bold text-white text-base flex items-center gap-2">
+                ${player.name}
+              </div>
+              <div class="text-xs text-gray-400 flex items-center gap-2">
+                <span>${player.realName}</span>
+                <span class="w-1 h-1 bg-gray-600 rounded-full"></span>
+                <span class="text-gray-300 font-medium">${player.team}</span>
+              </div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold text-green-400">${formatCurrency(player.earnings)}</div>
+          </div>
+        </div>
+      `).join('');
+    };
+
+    // 3. Render Main Chart (Prize Pool History)
+    const renderChart = () => {
+      const game = getSelectedGame();
+      const ctx = document.getElementById('prizeChart').getContext('2d');
+      
+      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+      gradient.addColorStop(0, game.color + '66');
+      gradient.addColorStop(1, game.color + '00');
+
+      if (chartInstance) {
+        chartInstance.data.datasets[0].data = game.history;
+        chartInstance.data.datasets[0].backgroundColor = game.color;
+        chartInstance.update();
+      } else {
+        Chart.defaults.color = '#9CA3AF';
+        Chart.defaults.font.family = 'ui-sans-serif, system-ui, sans-serif';
+        
+        chartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: years,
+            datasets: [{
+              label: 'Prize Pool (in millions)',
+              data: game.history,
+              backgroundColor: game.color,
+              borderRadius: 4,
+              borderWidth: 0,
+              hoverBackgroundColor: '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#1F2937',
+                titleColor: '#9CA3AF',
+                bodyColor: '#fff',
+                bodyFont: { weight: 'bold', size: 14 },
+                padding: 12,
+                displayColors: false,
+                callbacks: {
+                  label: function(context) {
+                    return '$' + context.parsed.y + 'M';
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { grid: { display: false, drawBorder: false } },
+              y: {
+                grid: { color: '#374151', borderDash: [5, 5] },
+                ticks: {
+                  callback: function(value) { return '$' + value + 'M'; }
+                }
+              }
+            }
+          }
+        });
+      }
+    };
+
+    // 4. Render Growth Chart (YoY Growth Chart)
+    const renderGrowthChart = () => {
+      const game = getSelectedGame();
+      const ctx = document.getElementById('growthChart').getContext('2d');
+      const growthRates = calculateGrowthRates(game.history);
+
+      if (growthChartInstance) {
+        growthChartInstance.data.datasets[0].data = growthRates;
+        growthChartInstance.data.datasets[0].borderColor = game.color;
+        growthChartInstance.update();
+      } else {
+        growthChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: years,
+            datasets: [{
+              label: 'YoY Growth (%)',
+              data: growthRates,
+              borderColor: game.color,
+              backgroundColor: game.color + '33',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.3,
+              pointRadius: 4,
+              pointBackgroundColor: game.color
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#1F2937',
+                titleColor: '#9CA3AF',
+                bodyColor: '#fff',
+                bodyFont: { weight: 'bold', size: 14 },
+                padding: 12,
+                displayColors: false,
+                callbacks: {
+                  label: function(context) {
+                    const val = context.parsed.y;
+                    return (val >= 0 ? '+' : '') + val + '% YoY Growth';
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { grid: { display: false, drawBorder: false } },
+              y: {
+                grid: { color: '#374151', borderDash: [5, 5] },
+                ticks: {
+                  callback: function(value) { return value + '%'; }
+                }
+              }
+            }
+          }
+        });
+      }
+    };
+
+    // --- INTERACTIONS ---
+    const selectGame = (id) => {
+      selectedGameId = id;
+      renderTable();
+      renderGameDetails();
+      renderChart();
+      renderGrowthChart();
+    };
+
+    // --- INITIALIZATION ---
+    window.onload = () => {
+      lucide.createIcons();
+      renderTable();
+      renderGameDetails();
+      renderChart();
+      renderGrowthChart();
+    };
+
+  </script>
+</body>
+</html>
