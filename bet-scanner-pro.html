@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetScanner PRO - Skener Kvota & Arbitraža</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        
+        .surebet-card { 
+            border-color: #10b981; 
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+            background: linear-gradient(145deg, #1e293b, #064e3b);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Animacija talasanja u pozadini za surebet kartice */
+        .surebet-card::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 60%);
+            animation: rotateBg 10s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+        @keyframes rotateBg { 100% { transform: rotate(360deg); } }
+        
+        .pulse-text { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+        
+        /* Strelica gore dole animacije */
+        .trend-up { color: #10b981; animation: pop .3s ease-out; }
+        .trend-down { color: #ef4444; animation: pop .3s ease-out; }
+        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.5); } 100% { transform: scale(1); } }
+        
+        /* Modal Backdrop */
+        .modal-backdrop {
+            background-color: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Skrol traka */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        
+        /* Glassmorphism utility */
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative">
+
+    <header class="bg-slate-900 border-b border-slate-700 p-4 sticky top-0 z-30 shadow-xl">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-start">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-satellite-dish text-blue-500 text-3xl pulse-text drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]"></i>
+                    <h1 class="text-3xl font-bold text-white tracking-wide">Bet<span class="text-blue-500">Scanner</span> <span class="text-xs bg-blue-600 text-white px-2 py-1 rounded-md uppercase ml-1">PRO</span></h1>
+                </div>
+                <!-- Mobilni meni toggle (za manje ekrane podešavanja idu tu) -->
+                <button onclick="toggleSettingsModal()" class="lg:hidden text-slate-300 hover:text-white p-2">
+                    <i class="fa-solid fa-gear text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-4 justify-center w-full lg:w-auto">
+                <select id="leagueSelect" class="bg-slate-800 border border-slate-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 transition shadow-inner">
+                    <option value="soccer_epl">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Engleska - Premijer Liga</option>
+                    <option value="soccer_spain_la_liga">🇪🇸 Španija - La Liga</option>
+                    <option value="soccer_italy_serie_a">🇮🇹 Italija - Serija A</option>
+                    <option value="soccer_germany_bundesliga">🇩🇪 Nemačka - Bundesliga</option>
+                    <option value="soccer_france_ligue_one">🇫🇷 Francuska - Liga 1</option>
+                    <option value="soccer_uefa_champs_league">🇪🇺 UEFA Liga Šampiona</option>
+                </select>
+
+                <div class="relative group">
+                    <input type="password" id="apiKeyInput" placeholder="Unesite API Ključ" class="bg-slate-800 border border-slate-600 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500 transition w-48 xl:w-64">
+                    <button onclick="toggleApiVisibility()" class="absolute right-3 top-2 text-slate-400 hover:text-white"><i class="fa-solid fa-eye"></i></button>
+                </div>
+
+                <label class="flex items-center cursor-pointer gap-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 transition">
+                    <span class="text-sm text-slate-300 font-medium"><i class="fa-solid fa-flask mr-1 text-yellow-400"></i>Demo Mode</span>
+                    <div class="relative">
+                        <input type="checkbox" id="demoToggle" class="sr-only" checked>
+                        <div class="block bg-slate-600 w-10 h-6 rounded-full transition toggle-bg"></div>
+                        <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition transform translate-x-4 bg-blue-500"></div>
+                    </div>
+                </label>
+
+                <!-- Dugme za podešavanja (Desktop) -->
+                <button onclick="toggleSettingsModal()" class="hidden lg:flex items-center justify-center bg-slate-700 hover:bg-slate-600 text-white w-10 h-10 rounded-full transition shadow-lg">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="bg-slate-800/80 py-2 border-b border-slate-700 backdrop-blur-sm sticky top-[72px] lg:top-[76px] z-20">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center text-xs md:text-sm">
+            <div class="flex gap-4 md:gap-6 items-center">
+                <span id="statusIndicator" class="text-green-400 font-medium flex items-center"><i class="fa-solid fa-circle-check mr-1.5 text-xs"></i>Sistem aktivan</span>
+                <span class="text-slate-400 hidden sm:inline-block"><i class="fa-solid fa-clock mr-1"></i>Ažurirano: <span id="lastUpdate" class="text-slate-200">Nikad</span></span>
+                <span id="soundStatus" class="text-slate-400" title="Zvučna obaveštenja"><i class="fa-solid fa-volume-high text-green-500"></i> Zvuk ON</span>
+            </div>
+            <div class="text-slate-300 font-medium flex items-center gap-2">
+                <span>Pronadjeno arbitraža:</span>
+                <span id="surebetCount" class="text-white font-bold bg-green-600 px-3 py-0.5 rounded-full shadow-[0_0_10px_rgba(22,163,74,0.6)]">0</span>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow p-4 md:p-6 relative z-10">
+        <div class="max-w-7xl mx-auto">
+            
+            <div id="messageBox" class="hidden mb-6 p-4 rounded-lg text-white font-medium shadow-lg flex items-center gap-3"></div>
+
+            <div id="loader" class="flex flex-col items-center justify-center py-32">
+                <div class="relative w-20 h-20">
+                    <div class="absolute inset-0 border-4 border-slate-700 rounded-full"></div>
+                    <div class="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+                    <div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-futbol text-slate-400 animate-pulse text-2xl"></i></div>
+                </div>
+                <p class="text-slate-400 mt-6 font-medium tracking-wide">Analiziranje svetskih kladionica...</p>
+            </div>
+
+            <!-- Mreža mečeva -->
+            <div id="matchesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+                <!-- Dinamički ubačene kartice -->
+            </div>
+
+            <div class="mt-16 bg-slate-800/40 rounded-2xl p-6 md:p-8 border border-slate-700 text-slate-300 shadow-2xl mb-8 glass">
+                <h2 class="text-3xl font-bold text-white mb-6 flex items-center border-b border-slate-700 pb-4">
+                    <i class="fa-solid fa-graduation-cap text-blue-500 mr-3"></i> Priručnik za BetScanner PRO
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Kolona 1 -->
+                    <div class="space-y-6">
+                        <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
+                            <h3 class="text-xl font-semibold text-white mb-3 flex items-center"><i class="fa-solid fa-magnifying-glass-dollar text-green-400 mr-2"></i>Šta je Arbitraža (Surebet)?</h3>
+                            <p class="text-sm leading-relaxed text-slate-300">
+                                Skener automatski poredi kvote sa preko 20 svetskih kladionica (Pinnacle, Bet365, Unibet, lokalne itd.). Kada zbir verovatnoća sva 3 ishoda padne <b>ispod 100%</b>, stvara se tzv. Arbitraža. To znači da možete uložiti novac na pobedu domaćina u Kladionici A, nerešeno u Kladionici B, i pobedu gosta u Kladionici C i ostvariti <b>matematički zagarantovan profit</b> bez obzira ko pobedi!
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
+                            <h3 class="text-xl font-semibold text-white mb-3 flex items-center"><i class="fa-solid fa-calculator text-blue-400 mr-2"></i>Kako radi Kalkulator Uloga?</h3>
+                            <p class="text-sm leading-relaxed text-slate-300 mb-3">
+                                Kada skener uokviri meč zeleno, kliknite na dugme <b><i class="fa-solid fa-scale-balanced mx-1"></i>Izračunaj uloge</b>. Otvoriće se kalkulator gde unosite vaš ukupan budžet (npr. 10.000 RSD).
+                            </p>
+                            <p class="text-sm leading-relaxed text-slate-300">
+                                Algoritam će tačno izračunati koliko tog novca ide na koji ishod (npr. 4200 RSD na keca, 2800 RSD na X, i 3000 RSD na dvojku), kako bi vaš dobitak u <b>svakom od 3 moguća scenarija</b> bio identičan i veći od početnih 10.000 RSD.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Kolona 2 -->
+                    <div class="space-y-6">
+                        <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
+                            <h3 class="text-xl font-semibold text-white mb-3 flex items-center"><i class="fa-solid fa-arrow-trend-down text-red-400 mr-2"></i>Pad Kvote (Dropping Odds)</h3>
+                            <p class="text-sm leading-relaxed text-slate-300">
+                                Pratite male strelice pored kvota: 
+                                <span class="inline-block mx-1 text-green-400"><i class="fa-solid fa-arrow-up"></i> (rast)</span> i 
+                                <span class="inline-block mx-1 text-red-400"><i class="fa-solid fa-arrow-down"></i> (pad)</span>.
+                            </p>
+                            <p class="text-sm leading-relaxed text-slate-300 mt-2">
+                                Ako vidite jaku crvenu strelicu za pad kvote na domaćina u svetu, a lokalna kladionica je još uvek nije oborila - pronašli ste <b>Value Bet</b> (vrednosnu kvotu). Tržište ulaže mnogo novca na tog tima (insajder info, povrede protivnika), a vi uplaćujete pre nego što kladionica shvati grešku.
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
+                            <h3 class="text-xl font-semibold text-white mb-3 flex items-center"><i class="fa-solid fa-key text-yellow-400 mr-2"></i>API & Uživo Podaci</h3>
+                            <p class="text-sm leading-relaxed text-slate-300">
+                                Aplikacija po učitavanju vrti generisane demo podatke i kvote se namerno pomeraju kako biste videli kako sistem reaguje. Za pravo klađenje:
+                            </p>
+                            <ol class="list-decimal list-inside text-sm mt-2 text-slate-400 space-y-1">
+                                <li>Registrujte se na <b>The-Odds-API.com</b> za ključ.</li>
+                                <li>Unesite ključ u polje na vrhu i isključite <b>Demo Mode</b>.</li>
+                                <li>Skener će početi da skuplja uživo kvote (Pazite na API limite i podešavanje intervala osvežavanja u <i class="fa-solid fa-gear"></i> opcijama).</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Kalkulator Modal -->
+    <div id="calcModal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-800 border border-slate-600 rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden transform scale-95 transition-transform duration-300" id="calcModalContent">
+            
+            <!-- Modal Header -->
+            <div class="bg-slate-900 border-b border-slate-700 p-5 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white flex items-center"><i class="fa-solid fa-scale-balanced text-blue-500 mr-2"></i> Surebet Kalkulator</h3>
+                <button onclick="closeCalculator()" class="text-slate-400 hover:text-white transition rounded-full p-1 hover:bg-slate-700"><i class="fa-solid fa-xmark text-xl w-6 h-6"></i></button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-6">
+                <!-- Info o meču u kalkulatoru -->
+                <div class="text-center mb-6">
+                    <p id="calcMatchTitle" class="text-xl font-bold text-white mb-1">Tim 1 vs Tim 2</p>
+                    <p id="calcMatchProfit" class="text-green-400 font-semibold text-sm">Zgarantovan Profit: +0.00%</p>
+                </div>
+
+                <!-- Input za Bankroll -->
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <label class="text-slate-300 font-medium w-full sm:w-auto">Ukupan budžet (Ulog):</label>
+                    <div class="relative w-full sm:w-48">
+                        <input type="number" id="calcTotalStake" value="10000" class="w-full bg-slate-800 border border-slate-600 text-white rounded-lg pl-4 pr-10 py-2 focus:border-blue-500 focus:outline-none font-bold text-right" oninput="recalculateStakes()">
+                        <span class="absolute right-3 top-2.5 text-slate-400">RSD</span>
+                    </div>
+                </div>
+
+                <!-- Prikaz uloga (Grid) -->
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <!-- Tip 1 -->
+                    <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-3 text-center relative">
+                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-slate-800 border border-slate-600 text-xs px-2 py-0.5 rounded-full text-slate-300">Tip 1</div>
+                        <div class="mt-2 text-white font-bold text-lg" id="calcOdds1">2.00</div>
+                        <div class="text-[10px] text-slate-400 truncate mb-2" id="calcBookie1">Kladionica</div>
+                        <div class="text-blue-400 font-bold text-lg" id="calcStake1">0.00</div>
+                        <div class="text-[10px] text-slate-500">Ulog</div>
+                    </div>
+                    <!-- Tip X -->
+                    <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-3 text-center relative">
+                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-slate-800 border border-slate-600 text-xs px-2 py-0.5 rounded-full text-slate-300">Tip X</div>
+                        <div class="mt-2 text-white font-bold text-lg" id="calcOddsX">3.00</div>
+                        <div class="text-[10px] text-slate-400 truncate mb-2" id="calcBookieX">Kladionica</div>
+                        <div class="text-blue-400 font-bold text-lg" id="calcStakeX">0.00</div>
+                        <div class="text-[10px] text-slate-500">Ulog</div>
+                    </div>
+                    <!-- Tip 2 -->
+                    <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-3 text-center relative">
+                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-slate-800 border border-slate-600 text-xs px-2 py-0.5 rounded-full text-slate-300">Tip 2</div>
+                        <div class="mt-2 text-white font-bold text-lg" id="calcOdds2">4.00</div>
+                        <div class="text-[10px] text-slate-400 truncate mb-2" id="calcBookie2">Kladionica</div>
+                        <div class="text-blue-400 font-bold text-lg" id="calcStake2">0.00</div>
+                        <div class="text-[10px] text-slate-500">Ulog</div>
+                    </div>
+                </div>
+
+                <!-- Rezultat Payout -->
+                <div class="bg-green-900/30 border border-green-500/50 rounded-xl p-4 flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-slate-300">Zagarantovana Isplata:</p>
+                        <p class="text-2xl font-bold text-green-400" id="calcTotalReturn">0.00</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-slate-300">Čist Profit:</p>
+                        <p class="text-2xl font-bold text-white bg-green-600 px-3 py-1 rounded-lg shadow-md" id="calcNetProfit">+0.00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Podešavanja Modal -->
+    <div id="settingsModal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-800 border border-slate-600 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300" id="settingsModalContent">
+            
+            <div class="bg-slate-900 border-b border-slate-700 p-5 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white flex items-center"><i class="fa-solid fa-gear text-slate-400 mr-2"></i> Podešavanja Skenera</h3>
+                <button onclick="toggleSettingsModal()" class="text-slate-400 hover:text-white transition rounded-full p-1"><i class="fa-solid fa-xmark text-xl w-6 h-6"></i></button>
+            </div>
+            
+            <div class="p-6 space-y-6">
+                <!-- Zvuk Toggle -->
+                <div class="flex items-center justify-between border-b border-slate-700 pb-4">
+                    <div>
+                        <p class="text-white font-medium mb-1"><i class="fa-solid fa-bell text-yellow-400 mr-2"></i>Zvučni alarmi</p>
+                        <p class="text-xs text-slate-400">Obavesti me zvukom kada se pojavi novi Surebet.</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="soundToggle" class="sr-only peer" checked onchange="updateSettings()">
+                        <div class="w-11 h-6 bg-slate-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                    </label>
+                </div>
+
+                <!-- Interval Osvežavanja -->
+                <div class="border-b border-slate-700 pb-4">
+                    <p class="text-white font-medium mb-2"><i class="fa-solid fa-stopwatch text-blue-400 mr-2"></i>Brzina osvežavanja (API)</p>
+                    <p class="text-xs text-slate-400 mb-3">Koliko često da skida podatke (Pazite na mesečne API limite!). U demo modu uvek radi brzo.</p>
+                    <select id="refreshIntervalSelect" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none" onchange="updateSettings()">
+                        <option value="15000">15 sekundi (Brzo - Troši limite)</option>
+                        <option value="30000" selected>30 sekundi (Preporučeno)</option>
+                        <option value="60000">1 minut (Štedi limit)</option>
+                        <option value="300000">5 minuta (Spora promena)</option>
+                    </select>
+                </div>
+
+                <!-- Podrazumevani budžet -->
+                <div>
+                    <p class="text-white font-medium mb-2"><i class="fa-solid fa-wallet text-amber-600 mr-2"></i>Podrazumevana Banka (Ulog)</p>
+                    <p class="text-xs text-slate-400 mb-3">Ovaj iznos će se uvek prvi učitati u kalkulatoru.</p>
+                    <div class="relative">
+                        <input type="number" id="defaultBankroll" value="10000" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:border-blue-500" onchange="updateSettings()">
+                        <span class="absolute right-3 top-2 text-slate-400">RSD</span>
+                    </div>
+                </div>
+                
+                <button onclick="toggleSettingsModal()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition shadow-lg mt-4">Sačuvaj i Zatvori</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elementi
+        const matchesGrid = document.getElementById('matchesGrid');
+        const loader = document.getElementById('loader');
+        const demoToggle = document.getElementById('demoToggle');
+        const toggleDot = document.querySelector('.dot');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const leagueSelect = document.getElementById('leagueSelect');
+        const lastUpdateText = document.getElementById('lastUpdate');
+        const surebetCountText = document.getElementById('surebetCount');
+        const messageBox = document.getElementById('messageBox');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const soundStatusIcon = document.getElementById('soundStatus');
+
+        // State (Stanje aplikacije)
+        let isDemoMode = true;
+        let refreshIntervalTimer = null;
+        let currentMatches = []; // Služi za čuvanje mečeva i driftovanje kvota u Demo modu
+        let historyOdds = {}; // Rečnik (mapa) za čuvanje prethodnih kvota radi izračunavanja rasta/pada
+        let knownSurebetIds = new Set(); // Prati koje smo surebetove već alarmirali da ne zvoni stalno
+
+        // Korisnička podešavanja
+        let appSettings = {
+            soundEnabled: true,
+            apiRefreshRate: 30000,
+            defaultBankroll: 10000
+        };
+
+        // Trenutni podaci za kalkulator
+        let currentCalcData = null;
+
+        // Ekipe za Demo Mod (Mock Podaci)
+        const teams = {
+            'soccer_epl': ['Arsenal', 'Man City', 'Liverpool', 'Chelsea', 'Man Utd', 'Tottenham', 'Newcastle', 'Aston Villa', 'Brighton', 'West Ham', 'Everton', 'Fulham'],
+            'soccer_spain_la_liga': ['Real Madrid', 'Barcelona', 'Atletico Madrid', 'Sevilla', 'Real Sociedad', 'Athletic Club', 'Betis', 'Valencia', 'Villarreal', 'Osasuna', 'Celta Vigo'],
+            'soccer_italy_serie_a': ['Inter', 'AC Milan', 'Juventus', 'Napoli', 'Roma', 'Lazio', 'Atalanta', 'Fiorentina', 'Torino', 'Bologna', 'Udinese', 'Sassuolo'],
+            'soccer_germany_bundesliga': ['Bayern Munich', 'Dortmund', 'Bayer Leverkusen', 'RB Leipzig', 'Eintracht', 'Stuttgart', 'Wolfsburg', 'Freiburg', 'Union Berlin', 'Werder'],
+            'soccer_france_ligue_one': ['PSG', 'Marseille', 'Monaco', 'Lyon', 'Lille', 'Lens', 'Rennes', 'Nice', 'Toulouse', 'Reims', 'Montpellier'],
+            'soccer_uefa_champs_league': ['Real Madrid', 'Man City', 'Bayern Munich', 'PSG', 'Inter', 'Arsenal', 'Barcelona', 'Juventus', 'Dortmund', 'Liverpool', 'Atletico Madrid']
+        };
+        const bookmakersList = ['Pinnacle', 'Bet365', 'Unibet', 'Mozzart', 'MaxBet', 'Bwin', 'WilliamHill'];
+
+        // Audio - Web Audio API (Generiše čist ton bez učitavanja MP3 fajlova)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Otključavanje zvuka na prvu interakciju (Internet pregledači blokiraju zvuk dok korisnik ne klikne negde)
+        ['click', 'touchstart', 'keydown'].forEach(evt => {
+            document.body.addEventListener(evt, () => {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            }, { once: true });
+        });
+
+        function playPingSound() {
+            if(!appSettings.soundEnabled) return;
+            
+            // Re-resume context for browser auto-play policies
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine'; // Mekši zvuk
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Nota A5
+            osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.5);
+            
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.6);
+        }
+
+        // Novi, tiši zvuk za redovno obaveštenje o osvežavanju kvota (svakih X sekundi)
+        function playUpdateSound() {
+            if(!appSettings.soundEnabled) return;
+            if(audioCtx.state === 'suspended') return; // Čeka prvu interakciju korisnika
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.1);
+            
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.02); // Dosta tiše od glavnog alarma
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        // Prikaz poruka (Toast)
+        function showMessage(msg, type = 'info') {
+            let icon = '<i class="fa-solid fa-circle-info"></i>';
+            messageBox.className = 'mb-6 p-4 rounded-lg text-white font-medium shadow-lg flex items-center gap-3 transition-all duration-300';
+            
+            if(type === 'error') {
+                messageBox.classList.add('bg-red-600/90', 'border', 'border-red-400');
+                icon = '<i class="fa-solid fa-triangle-exclamation text-xl"></i>';
+            } else if(type === 'success') {
+                messageBox.classList.add('bg-green-600/90', 'border', 'border-green-400');
+                icon = '<i class="fa-solid fa-check-circle text-xl"></i>';
+            } else {
+                messageBox.classList.add('bg-blue-600/90', 'border', 'border-blue-400');
+            }
+            
+            messageBox.innerHTML = `${icon} <span>${msg}</span>`;
+            messageBox.classList.remove('hidden');
+            
+            setTimeout(() => { messageBox.classList.add('opacity-0'); setTimeout(()=> {messageBox.classList.add('hidden'); messageBox.classList.remove('opacity-0');}, 300); }, 6000);
+        }
+
+        function toggleApiVisibility() {
+            apiKeyInput.type = apiKeyInput.type === "password" ? "text" : "password";
+        }
+
+        // Settings Modal
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsContent = document.getElementById('settingsModalContent');
+        
+        function toggleSettingsModal() {
+            if(settingsModal.classList.contains('hidden')) {
+                settingsModal.classList.remove('hidden');
+                // Trigger reflow for animation
+                void settingsModal.offsetWidth;
+                settingsModal.classList.remove('opacity-0');
+                settingsContent.classList.remove('scale-95');
+            } else {
+                settingsModal.classList.add('opacity-0');
+                settingsContent.classList.add('scale-95');
+                setTimeout(() => settingsModal.classList.add('hidden'), 300);
+            }
+        }
+
+        function updateSettings() {
+            appSettings.soundEnabled = document.getElementById('soundToggle').checked;
+            appSettings.apiRefreshRate = parseInt(document.getElementById('refreshIntervalSelect').value);
+            appSettings.defaultBankroll = parseFloat(document.getElementById('defaultBankroll').value) || 10000;
+            
+            soundStatusIcon.innerHTML = appSettings.soundEnabled ? 
+                '<i class="fa-solid fa-volume-high text-green-500"></i> Zvuk ON' : 
+                '<i class="fa-solid fa-volume-xmark text-red-500"></i> Zvuk OFF';
+            
+            if(!isDemoMode) {
+                // Restartuj interval sa novom brzinom samo ako je API mod aktivan
+                startScanner();
+            }
+        }
+
+        // Calculator Modal
+        const calcModal = document.getElementById('calcModal');
+        const calcContent = document.getElementById('calcModalContent');
+
+        function openCalculator(matchStr) {
+            currentCalcData = JSON.parse(decodeURIComponent(matchStr));
+            
+            document.getElementById('calcMatchTitle').innerText = `${currentCalcData.home} vs ${currentCalcData.away}`;
+            document.getElementById('calcMatchProfit').innerText = `Zgarantovan Profit: +${currentCalcData.profit}%`;
+            
+            // Popuni trenutne kvote
+            document.getElementById('calcOdds1').innerText = currentCalcData.best1.price.toFixed(2);
+            document.getElementById('calcBookie1').innerText = currentCalcData.best1.bookmaker;
+            document.getElementById('calcOddsX').innerText = currentCalcData.bestX.price.toFixed(2);
+            document.getElementById('calcBookieX').innerText = currentCalcData.bestX.bookmaker;
+            document.getElementById('calcOdds2').innerText = currentCalcData.best2.price.toFixed(2);
+            document.getElementById('calcBookie2').innerText = currentCalcData.best2.bookmaker;
+            
+            document.getElementById('calcTotalStake').value = appSettings.defaultBankroll;
+            
+            recalculateStakes();
+
+            calcModal.classList.remove('hidden');
+            void calcModal.offsetWidth;
+            calcModal.classList.remove('opacity-0');
+            calcContent.classList.remove('scale-95');
+        }
+
+        function closeCalculator() {
+            calcModal.classList.add('opacity-0');
+            calcContent.classList.add('scale-95');
+            setTimeout(() => calcModal.classList.add('hidden'), 300);
+            currentCalcData = null;
+        }
+
+        // Kalkulacija Arbitraže (Glavna matematika)
+        function recalculateStakes() {
+            if(!currentCalcData) return;
+            const totalStake = parseFloat(document.getElementById('calcTotalStake').value) || 0;
+            if(totalStake <= 0) return;
+
+            const k1 = currentCalcData.best1.price;
+            const kX = currentCalcData.bestX.price;
+            const k2 = currentCalcData.best2.price;
+            
+            const margin = (1/k1) + (1/kX) + (1/k2); // Arb %
+            
+            // Formula za stake koji daje jednak payout za sve ishode
+            const stake1 = (totalStake / margin) / k1;
+            const stakeX = (totalStake / margin) / kX;
+            const stake2 = (totalStake / margin) / k2;
+            
+            document.getElementById('calcStake1').innerText = stake1.toFixed(2);
+            document.getElementById('calcStakeX').innerText = stakeX.toFixed(2);
+            document.getElementById('calcStake2').innerText = stake2.toFixed(2);
+            
+            // Svi returni bi trebali biti isti, uzimamo prvi
+            const payout = stake1 * k1;
+            const profit = payout - totalStake;
+            
+            document.getElementById('calcTotalReturn').innerText = payout.toFixed(2);
+            const netProfitEl = document.getElementById('calcNetProfit');
+            netProfitEl.innerText = (profit > 0 ? '+' : '') + profit.toFixed(2);
+            netProfitEl.className = `text-2xl font-bold text-white px-3 py-1 rounded-lg shadow-md ${profit > 0 ? 'bg-green-600' : 'bg-red-600'}`;
+        }
+
+        function generateMockData(league) {
+            const leagueTeams = teams[league];
+            const numMatches = 12;
+            let mockData = [];
+            let isInit = currentMatches.length === 0;
+
+            for(let i=0; i<numMatches; i++) {
+                let match;
+                if(isInit) {
+                    // Generisanje početnih mečeva
+                    let home = leagueTeams[Math.floor(Math.random() * leagueTeams.length)];
+                    let away;
+                    do { away = leagueTeams[Math.floor(Math.random() * leagueTeams.length)]; } while (home === away);
+                    
+                    let probHome = Math.random() * 0.4 + 0.3; 
+                    let probAway = Math.random() * (0.9 - probHome);
+                    let probDraw = 1.0 - probHome - probAway;
+
+                    match = {
+                        id: `${league}_mock_${i}`,
+                        home_team: home,
+                        away_team: away,
+                        commence_time: new Date(Date.now() + Math.random() * 86400000).toISOString(),
+                        baseProbs: { home: probHome, draw: probDraw, away: probAway },
+                        bookmakers: []
+                    };
+
+                    let matchBookies = [...bookmakersList].sort(() => 0.5 - Math.random()).slice(0, 4);
+                    
+                    matchBookies.forEach((bookie) => {
+                        let vol = 0.04; 
+                        match.bookmakers.push({
+                            title: bookie,
+                            markets: [{
+                                key: 'h2h',
+                                outcomes: [
+                                    { name: home, price: (1/probHome) + (Math.random()*vol - vol/2) },
+                                    { name: 'Draw', price: (1/probDraw) + (Math.random()*vol - vol/2) },
+                                    { name: away, price: (1/probAway) + (Math.random()*vol - vol/2) }
+                                ]
+                            }]
+                        });
+                    });
+                    currentMatches.push(match);
+                } else {
+                    // Mutiranje (Drifting) postojećih kvota za efekat padanja/skakanja
+                    match = currentMatches[i];
+                    // Nasumična promena na jednoj kladionici i na jednom ishodu
+                    let targetBookieIdx = Math.floor(Math.random() * match.bookmakers.length);
+                    let targetOutcomeIdx = Math.floor(Math.random() * 3);
+                    
+                    // Namerno kreiranje surebeta (veliki skok) 15% šanse po ciklusu
+                    let forceSurebet = Math.random() > 0.85;
+                    let drift = (Math.random() - 0.5) * 0.1; // Normalan pad/skok
+                    
+                    if(forceSurebet) drift = 0.8; // Ogroman skok nagore kreira arbitražu
+                    
+                    let currentPrice = match.bookmakers[targetBookieIdx].markets[0].outcomes[targetOutcomeIdx].price;
+                    match.bookmakers[targetBookieIdx].markets[0].outcomes[targetOutcomeIdx].price = Math.max(1.01, currentPrice + drift);
+                }
+                mockData.push(match);
+            }
+            return JSON.parse(JSON.stringify(mockData)); // Vraća duboku kopiju
+        }
+
+        function processOdds(data) {
+            let processedMatches = [];
+            let foundSurebets = 0;
+            let newSurebetsIds = []; // Za zvučni alarm
+
+            data.forEach(match => {
+                let bestHome = { price: 0, bookmaker: '' };
+                let bestDraw = { price: 0, bookmaker: '' };
+                let bestAway = { price: 0, bookmaker: '' };
+
+                // Pronalazak apsolutno najveće kvote na svetu
+                match.bookmakers.forEach(bookie => {
+                    if(!bookie.markets || bookie.markets.length === 0) return;
+                    let h2h = bookie.markets.find(m => m.key === 'h2h');
+                    if(!h2h) return;
+
+                    h2h.outcomes.forEach(outcome => {
+                        if (outcome.name === match.home_team && outcome.price > bestHome.price) {
+                            bestHome = { price: outcome.price, bookmaker: bookie.title };
+                        }
+                        else if (outcome.name === match.away_team && outcome.price > bestAway.price) {
+                            bestAway = { price: outcome.price, bookmaker: bookie.title };
+                        }
+                        else if (outcome.name === 'Draw' && outcome.price > bestDraw.price) {
+                            bestDraw = { price: outcome.price, bookmaker: bookie.title };
+                        }
+                    });
+                });
+
+                if(bestHome.price === 0 || bestDraw.price === 0 || bestAway.price === 0) return;
+
+                // Matematika za arbitražu
+                let margin = (1 / bestHome.price) + (1 / bestDraw.price) + (1 / bestAway.price);
+                let isSurebet = margin < 1.0;
+                let profitPercentage = isSurebet ? ((1.0 - margin) * 100).toFixed(2) : 0;
+
+                // Logika zvučnog alarma (Zazvoni samo ako je OVO NOVI surebet koji malopre nije bio)
+                if(isSurebet) {
+                    foundSurebets++;
+                    if(!knownSurebetIds.has(match.id)) {
+                        newSurebetsIds.push(match.id);
+                        knownSurebetIds.add(match.id);
+                    }
+                } else {
+                    // Ako je nestao surebet (kvote pale), obriši ga iz poznatih
+                    if(knownSurebetIds.has(match.id)) knownSurebetIds.delete(match.id);
+                }
+
+                // Praćenje padova i rasta (Dropping odds vs History)
+                let trend1 = 'none', trendX = 'none', trend2 = 'none';
+                if(historyOdds[match.id]) {
+                    const prev = historyOdds[match.id];
+                    if(bestHome.price > prev.best1) trend1 = 'up';
+                    else if(bestHome.price < prev.best1) trend1 = 'down';
+                    
+                    if(bestDraw.price > prev.bestX) trendX = 'up';
+                    else if(bestDraw.price < prev.bestX) trendX = 'down';
+                    
+                    if(bestAway.price > prev.best2) trend2 = 'up';
+                    else if(bestAway.price < prev.best2) trend2 = 'down';
+                }
+
+                // Ažuriraj history za sledeći krug
+                historyOdds[match.id] = { best1: bestHome.price, bestX: bestDraw.price, best2: bestAway.price };
+
+                processedMatches.push({
+                    id: match.id,
+                    home: match.home_team,
+                    away: match.away_team,
+                    time: new Date(match.commence_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    best1: bestHome,
+                    bestX: bestDraw,
+                    best2: bestAway,
+                    trend1, trendX, trend2,
+                    isSurebet: isSurebet,
+                    profit: profitPercentage,
+                    margin: (margin * 100).toFixed(1)
+                });
+            });
+
+            // Aktiviraj zvučni alarm ako imamo novih pronalazaka
+            if(newSurebetsIds.length > 0) playPingSound();
+
+            return { matches: processedMatches, surebets: foundSurebets };
+        }
+
+        // Helper za generisanje ikone strelice
+        function getTrendIcon(trend) {
+            if(trend === 'up') return '<i class="fa-solid fa-caret-up trend-up ml-1 text-sm drop-shadow-md"></i>';
+            if(trend === 'down') return '<i class="fa-solid fa-caret-down trend-down ml-1 text-sm drop-shadow-md"></i>';
+            return '<span class="ml-1 w-3 inline-block"></span>'; // Prazan prostor da se UI ne pomera
+        }
+
+        function renderDashboard(processedData) {
+            // Animacija brojača
+            if(surebetCountText.innerText != processedData.surebets) {
+                surebetCountText.classList.add('animate-ping');
+                setTimeout(()=> surebetCountText.classList.remove('animate-ping'), 300);
+            }
+            surebetCountText.innerText = processedData.surebets;
+
+            if(processedData.matches.length === 0) {
+                matchesGrid.innerHTML = `<div class="col-span-full text-center text-slate-400 py-10 bg-slate-800/50 rounded-xl border border-slate-700">Nema trenutno dostupnih kvota za izabranu ligu.</div>`;
+                matchesGrid.classList.remove('hidden');
+                loader.classList.add('hidden');
+                return;
+            }
+
+            // Sortiranje: Surebetovi prvo, onda po payout margini (što manje to bliže arbitraži)
+            processedData.matches.sort((a, b) => {
+                if (a.isSurebet && !b.isSurebet) return -1;
+                if (!a.isSurebet && b.isSurebet) return 1;
+                return parseFloat(a.margin) - parseFloat(b.margin);
+            });
+
+            // Akumuliramo HTML u string da izbegnemo skakanje ekrana (scroll jump)
+            let newHTML = '';
+
+            processedData.matches.forEach(match => {
+                let badgeHTML = match.isSurebet 
+                    ? `<div class="absolute -top-3 -right-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold px-4 py-1.5 rounded-bl-xl rounded-tr-xl shadow-lg text-xs animate-pulse border-b border-l border-green-300 z-10 flex items-center gap-1"><i class="fa-solid fa-bolt"></i> +${match.profit}% PROFIT</div>` 
+                    : '';
+
+                // JSON encode objekta da bismo ga prosledili u dugme za kalkulator
+                const matchJsonStr = encodeURIComponent(JSON.stringify(match));
+                
+                // Dugme za kalkulator
+                let actionButton = match.isSurebet ?
+                    `<button onclick="openCalculator('${matchJsonStr}')" class="w-full mt-4 bg-green-600 hover:bg-green-500 text-white font-semibold py-2 rounded-lg transition shadow-md flex items-center justify-center gap-2"><i class="fa-solid fa-scale-balanced"></i> Izračunaj uloge</button>` :
+                    `<div class="w-full mt-4 bg-slate-700/50 text-slate-500 font-medium py-2 rounded-lg text-center cursor-not-allowed border border-slate-700/50">Nema arbitraže</div>`;
+
+                newHTML += `
+                    <div class="bg-slate-800 rounded-xl p-5 border transition-all duration-300 hover:scale-[1.02] flex flex-col justify-between ${match.isSurebet ? 'surebet-card border-green-500' : 'border-slate-700'}">
+                        <div class="relative z-10">
+                            ${badgeHTML}
+                            <div class="flex justify-between items-center text-xs text-slate-400 mb-4 border-b border-slate-700 pb-2">
+                                <span class="bg-slate-900 px-2 py-1 rounded-md text-blue-300"><i class="fa-regular fa-clock mr-1"></i>${match.time}</span>
+                                <span class="${match.margin < 102 ? 'text-yellow-400 font-medium' : ''}">Margina: ${match.margin}%</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center mb-6 font-semibold text-lg">
+                                <div class="text-right flex-1 truncate pr-2" title="${match.home}">${match.home}</div>
+                                <div class="text-slate-500 px-2 text-sm bg-slate-900 rounded-full">VS</div>
+                                <div class="text-left flex-1 truncate pl-2" title="${match.away}">${match.away}</div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2">
+                                <!-- Kvote 1 -->
+                                <div class="bg-slate-900 rounded-lg p-2 text-center border border-slate-700 flex flex-col justify-between shadow-inner ${match.isSurebet ? 'bg-green-900/40 border-green-500/50' : ''}">
+                                    <span class="text-xs text-slate-400 block mb-1 font-medium">1</span>
+                                    <span class="text-xl font-bold text-white block mb-1 flex justify-center items-center">${match.best1.price.toFixed(2)}${getTrendIcon(match.trend1)}</span>
+                                    <span class="text-[10px] text-slate-500 truncate bg-slate-800 rounded px-1" title="${match.best1.bookmaker}">${match.best1.bookmaker}</span>
+                                </div>
+                                <!-- Kvote X -->
+                                <div class="bg-slate-900 rounded-lg p-2 text-center border border-slate-700 flex flex-col justify-between shadow-inner ${match.isSurebet ? 'bg-green-900/40 border-green-500/50' : ''}">
+                                    <span class="text-xs text-slate-400 block mb-1 font-medium">X</span>
+                                    <span class="text-xl font-bold text-white block mb-1 flex justify-center items-center">${match.bestX.price.toFixed(2)}${getTrendIcon(match.trendX)}</span>
+                                    <span class="text-[10px] text-slate-500 truncate bg-slate-800 rounded px-1" title="${match.bestX.bookmaker}">${match.bestX.bookmaker}</span>
+                                </div>
+                                <!-- Kvote 2 -->
+                                <div class="bg-slate-900 rounded-lg p-2 text-center border border-slate-700 flex flex-col justify-between shadow-inner ${match.isSurebet ? 'bg-green-900/40 border-green-500/50' : ''}">
+                                    <span class="text-xs text-slate-400 block mb-1 font-medium">2</span>
+                                    <span class="text-xl font-bold text-white block mb-1 flex justify-center items-center">${match.best2.price.toFixed(2)}${getTrendIcon(match.trend2)}</span>
+                                    <span class="text-[10px] text-slate-500 truncate bg-slate-800 rounded px-1" title="${match.best2.bookmaker}">${match.best2.bookmaker}</span>
+                                </div>
+                            </div>
+                            ${actionButton}
+                        </div>
+                    </div>
+                `;
+            });
+
+            matchesGrid.innerHTML = newHTML; // Ubacujemo HTML odjednom
+
+            matchesGrid.classList.remove('hidden');
+            loader.classList.add('hidden');
+            let now = new Date();
+            lastUpdateText.innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            
+            // Okidamo tihi zvuk na svako osvežavanje tabele
+            playUpdateSound();
+        }
+
+        async function fetchAndProcessData() {
+            const league = leagueSelect.value;
+            
+            if (isDemoMode) {
+                statusIndicator.innerHTML = `<i class="fa-solid fa-flask mr-1.5 text-xs"></i>Demo Aktivan`;
+                statusIndicator.className = "text-yellow-400 font-medium flex items-center";
+                
+                const mockData = generateMockData(league);
+                const processed = processOdds(mockData);
+                renderDashboard(processed);
+                return;
+            }
+
+            const apiKey = apiKeyInput.value.trim();
+            if (!apiKey) {
+                showMessage("Niste uneli API ključ. Vraćam na Demo režim.", "error");
+                document.getElementById('demoToggle').checked = true;
+                handleToggle(); 
+                return;
+            }
+
+            statusIndicator.innerHTML = `<i class="fa-solid fa-satellite-dish mr-1.5 text-xs pulse-text"></i>LIVE Podaci`;
+            statusIndicator.className = "text-blue-400 font-medium flex items-center";
+
+            try {
+                // H2H market za fudbal, EU regija (Pinnacle, Bet365 itd u njoj)
+                const url = `https://api.the-odds-api.com/v4/sports/${league}/odds/?apiKey=${apiKey}&regions=eu&markets=h2h`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.message || 'Neuspešan zahtev ka Odds API-ju.');
+                }
+
+                const data = await response.json();
+                const processed = processOdds(data);
+                renderDashboard(processed);
+                
+                // Obavesti korisnika o preostaloj kvoti na API-ju iz HTTP Header-a (korisno za The Odds API)
+                const requestsRemaining = response.headers.get('x-requests-remaining');
+                if(requestsRemaining && parseInt(requestsRemaining) < 50) {
+                     showMessage(`Upozorenje: Preostalo vam je još samo ${requestsRemaining} API poziva ovog meseca!`, 'error');
+                }
+
+            } catch (error) {
+                console.error("API Error:", error);
+                showMessage(`Greška pri učitavanju: ${error.message}`, "error");
+                
+                // Prevencija rapidnog ponavljanja ako API pada
+                clearInterval(refreshIntervalTimer);
+                setTimeout(() => {
+                    document.getElementById('demoToggle').checked = true;
+                    handleToggle();
+                }, 5000);
+            }
+        }
+
+        function startScanner() {
+            if(matchesGrid.children.length === 0) {
+                loader.classList.remove('hidden');
+                matchesGrid.classList.add('hidden');
+            }
+            
+            fetchAndProcessData();
+            
+            if(refreshIntervalTimer) clearInterval(refreshIntervalTimer);
+            
+            // Demo mod je vizuelno lepši ako se brzo menja. LIVE mode poštuje user setings.
+            let intervalTime = isDemoMode ? 4000 : appSettings.apiRefreshRate; 
+            refreshIntervalTimer = setInterval(fetchAndProcessData, intervalTime);
+        }
+
+        function handleToggle() {
+            isDemoMode = demoToggle.checked;
+            
+            // Resetujemo historiju i poznate surebetove kada menjamo mod
+            historyOdds = {};
+            knownSurebetIds.clear();
+            currentMatches = [];
+            matchesGrid.innerHTML = ''; // Forsiraj brisanje
+
+            if (isDemoMode) {
+                toggleDot.style.transform = 'translateX(100%)';
+                toggleDot.classList.remove('bg-slate-400');
+                toggleDot.classList.add('bg-blue-500');
+                apiKeyInput.parentElement.classList.add('opacity-50');
+                showMessage("Demo režim uključen. Podaci se simuliraju.", "info");
+            } else {
+                toggleDot.style.transform = 'translateX(0)';
+                toggleDot.classList.remove('bg-blue-500');
+                toggleDot.classList.add('bg-slate-400');
+                apiKeyInput.parentElement.classList.remove('opacity-50');
+                showMessage("Povezivanje na uživo servere...", "info");
+            }
+            startScanner();
+        }
+
+        // Listeneri
+        demoToggle.addEventListener('change', handleToggle);
+        
+        leagueSelect.addEventListener('change', () => {
+            historyOdds = {}; // Reset istorije za novu ligu
+            knownSurebetIds.clear();
+            currentMatches = [];
+            startScanner();
+        });
+        
+        // Modal zatvaranje klikom izvan njega
+        document.getElementById('calcModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('calcModal')) closeCalculator();
+        });
+        document.getElementById('settingsModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('settingsModal')) toggleSettingsModal();
+        });
+
+        // Inicijalizacija pri prvom učitavanju stranice
+        window.onload = () => {
+            updateSettings(); // Pokupi vrednosti iz UI
+            handleToggle(); // Pokreni demo
+        };
+
+    </script>
+</body>
+</html>
